@@ -1,4 +1,7 @@
-import { createSupabaseServerClient } from "@/lib/supabase/server";
+import {
+  createSupabaseAdminClient,
+  createSupabaseServerClient
+} from "@/lib/supabase/server";
 
 export type DocumentFormValues = {
   documentId?: string;
@@ -60,11 +63,11 @@ function formatDate(value: string | null) {
 export async function createDocument(
   input: CreateDocumentInput
 ): Promise<CreateDocumentResult> {
-  const supabase = createSupabaseServerClient();
+  const supabase = createSupabaseAdminClient();
 
   if (!supabase) {
     return {
-      message: "Supabase 尚未配置，无法写入文件",
+      message: "Supabase service role 尚未配置，无法写入文件",
       ok: false
     };
   }

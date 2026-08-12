@@ -1,4 +1,7 @@
-import { createSupabaseServerClient } from "@/lib/supabase/server";
+import {
+  createSupabaseAdminClient,
+  createSupabaseServerClient
+} from "@/lib/supabase/server";
 
 export type ProductFormValues = {
   category: string;
@@ -85,11 +88,11 @@ function createSlug(value: string) {
 export async function createProduct(
   input: CreateProductInput
 ): Promise<CreateProductResult> {
-  const supabase = createSupabaseServerClient();
+  const supabase = createSupabaseAdminClient();
 
   if (!supabase) {
     return {
-      message: "Supabase 尚未配置，无法写入产品",
+      message: "Supabase service role 尚未配置，无法写入产品",
       ok: false
     };
   }

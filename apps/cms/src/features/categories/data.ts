@@ -1,4 +1,7 @@
-import { createSupabaseServerClient } from "@/lib/supabase/server";
+import {
+  createSupabaseAdminClient,
+  createSupabaseServerClient
+} from "@/lib/supabase/server";
 
 export type CategoryFormValues = {
   categoryId?: string;
@@ -64,11 +67,11 @@ function createSlug(value: string) {
 export async function createCategory(
   input: CreateCategoryInput
 ): Promise<CreateCategoryResult> {
-  const supabase = createSupabaseServerClient();
+  const supabase = createSupabaseAdminClient();
 
   if (!supabase) {
     return {
-      message: "Supabase 尚未配置，无法写入分类",
+      message: "Supabase service role 尚未配置，无法写入分类",
       ok: false
     };
   }
