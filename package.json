@@ -1,0 +1,16 @@
+{
+  "name": "commercial",
+  "private": true,
+  "scripts": {
+    "dev:cms": "npm run dev --workspace @commercial/cms",
+    "build:cms": "npm run build --workspace @commercial/cms",
+    "lint:cms": "npm run lint --workspace @commercial/cms"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "devDependencies": {
+    "typescript": "^5.5.4"
+  }
+}
