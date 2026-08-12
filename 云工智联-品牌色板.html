@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>云工智联 · 品牌色板 Brand Color Palette</title>
+<style>
+  :root{
+    --primary-50:#EEF4FC;--primary-100:#D8E7F8;--primary-200:#A8C9F0;--primary-300:#74A9E6;
+    --primary-400:#3C86DC;--primary-500:#2065B6;--primary-600:#1A5192;--primary-700:#154175;
+    --primary-800:#0F3057;--primary-900:#0A1F38;
+    --secondary-50:#FEF6EC;--secondary-100:#FCE8CF;--secondary-200:#F9D19F;--secondary-300:#F6B565;
+    --secondary-400:#F39E34;--secondary-500:#F2921B;--secondary-600:#D47B0C;--secondary-700:#AE650A;
+    --secondary-800:#874E08;--secondary-900:#603806;
+    --neutral-0:#FFFFFF;--neutral-50:#F9FAFA;--neutral-100:#F1F2F3;--neutral-200:#E3E5E8;
+    --neutral-300:#D0D3D7;--neutral-400:#9CA3AB;--neutral-500:#757F8A;--neutral-600:#596069;
+    --neutral-700:#42474D;--neutral-800:#2A2E32;--neutral-900:#1A1C1E;--neutral-950:#0A0A0A;
+    --success-base:#1E9E63;--success-text:#0F7A48;
+    --warning-base:#EAB308;--warning-text:#946200;
+    --danger-base:#E14B3C;--danger-text:#B5311F;
+    --info-base:#3C86DC;--info-text:#154175;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+    background:var(--neutral-50);color:var(--neutral-900);line-height:1.6;
+  }
+  .wrap{max-width:1180px;margin:0 auto;padding:40px 24px 80px;}
+  header{text-align:center;margin-bottom:48px;}
+  header h1{font-size:28px;margin:0 0 8px;color:var(--primary-800);}
+  header p{color:var(--neutral-600);margin:0;font-size:14px;}
+  .brand-row{display:flex;gap:16px;justify-content:center;margin-top:24px;flex-wrap:wrap;}
+  .brand-chip{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--neutral-200);
+    border-radius:10px;padding:10px 16px;box-shadow:0 1px 3px rgba(0,0,0,.04);}
+  .brand-chip .sw{width:28px;height:28px;border-radius:6px;flex-shrink:0;border:1px solid rgba(0,0,0,.06);}
+  .brand-chip .lab{font-size:13px;}
+  .brand-chip .lab b{display:block;font-size:12px;color:var(--neutral-500);font-weight:500;}
+  .brand-chip .lab code{font-size:13px;font-weight:700;color:var(--neutral-900);}
+
+  section{margin-bottom:56px;}
+  section > h2{font-size:18px;color:var(--primary-800);border-left:4px solid var(--secondary-500);
+    padding-left:10px;margin-bottom:6px;}
+  section > .desc{color:var(--neutral-600);font-size:13px;margin:0 0 20px 14px;}
+
+  .ramp{display:grid;grid-template-columns:repeat(10,1fr);gap:8px;}
+  @media (max-width:900px){.ramp{grid-template-columns:repeat(5,1fr);}}
+  .swatch{border-radius:10px;overflow:hidden;border:1px solid rgba(0,0,0,.06);cursor:pointer;
+    background:#fff;transition:transform .15s;position:relative;}
+  .swatch:hover{transform:translateY(-3px);box-shadow:0 6px 14px rgba(0,0,0,.12);}
+  .swatch .fill{height:64px;}
+  .swatch .meta{padding:8px 10px;font-size:11px;}
+  .swatch .meta .step{font-weight:700;color:var(--neutral-500);}
+  .swatch .meta .hex{font-weight:700;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px;}
+  .swatch .copied{position:absolute;top:6px;right:6px;background:rgba(0,0,0,.65);color:#fff;
+    font-size:10px;padding:2px 6px;border-radius:4px;opacity:0;transition:opacity .2s;pointer-events:none;}
+  .swatch.copied-flash .copied{opacity:1;}
+
+  .semantic-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
+  @media (max-width:800px){.semantic-grid{grid-template-columns:repeat(2,1fr);}}
+  .sem-card{background:#fff;border:1px solid var(--neutral-200);border-radius:12px;overflow:hidden;}
+  .sem-card .top{height:56px;}
+  .sem-card .body{padding:12px 14px;}
+  .sem-card .name{font-weight:700;font-size:13px;margin-bottom:6px;}
+  .sem-card .row{display:flex;justify-content:space-between;font-size:11.5px;color:var(--neutral-600);
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;margin-bottom:2px;cursor:pointer;}
+  .sem-card .row:hover{color:var(--primary-700);}
+  .badge{display:inline-block;font-size:10px;padding:1px 7px;border-radius:20px;margin-top:6px;font-weight:600;}
+  .badge.pass{background:#E8F6EE;color:var(--success-text);}
+  .badge.warn{background:#FDF3D9;color:var(--warning-text);}
+
+  table.usage{width:100%;border-collapse:collapse;background:#fff;border-radius:10px;overflow:hidden;
+    box-shadow:0 1px 3px rgba(0,0,0,.04);font-size:13px;}
+  table.usage th,table.usage td{padding:10px 14px;border-bottom:1px solid var(--neutral-100);text-align:left;}
+  table.usage th{background:var(--neutral-50);color:var(--neutral-600);font-size:12px;font-weight:600;}
+  table.usage td code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px;}
+  .dot{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px;
+    border:1px solid rgba(0,0,0,.08);}
+  .ratio-ok{color:var(--success-text);font-weight:700;}
+  .ratio-bad{color:var(--danger-text);font-weight:700;}
+
+  pre.codeblock{background:#0F1720;color:#D8E7F8;padding:18px 20px;border-radius:12px;overflow-x:auto;
+    font-size:12.5px;line-height:1.7;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;}
+  pre.codeblock .c1{color:#7DD3A0;}
+  .copy-btn{float:right;background:var(--secondary-500);color:#0A0A0A;border:none;padding:5px 12px;
+    border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;margin-top:-4px;}
+  .copy-btn:hover{background:var(--secondary-400);}
+  footer{text-align:center;color:var(--neutral-400);font-size:12px;margin-top:40px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>云工智联 · 网站品牌色板</h1>
+  <p>从公司 Logo 提取并系统化生成 · 每个色块可点击复制 HEX 值 · 已做 WCAG AA 对比度校验</p>
+  <div class="brand-row">
+    <div class="brand-chip"><div class="sw" style="background:#1A5192"></div>
+      <div class="lab"><b>Logo 主蓝 Primary</b><code>#1A5192</code></div></div>
+    <div class="brand-chip"><div class="sw" style="background:#F2921B"></div>
+      <div class="lab"><b>Logo 主橙 Secondary</b><code>#F2921B</code></div></div>
+    <div class="brand-chip"><div class="sw" style="background:#0A0A0A"></div>
+      <div class="lab"><b>Logo 字标黑 Ink</b><code>#0A0A0A</code></div></div>
+  </div>
+</header>
+
+<section>
+  <h2>1. 主色 Primary Blue（源自 Logo 建筑 / 门框图形）</h2>
+  <p class="desc">基准色 #1A5192 对应 600 级，用于导航栏、主按钮、链接、标题强调。</p>
+  <div class="ramp" id="ramp-primary"></div>
+</section>
+
+<section>
+  <h2>2. 辅色 Secondary Orange（源自 Logo 水滴 / 水管图形）</h2>
+  <p class="desc">基准色 #F2921B 对应 500 级，用于 CTA 按钮、图标高亮、进度条、重点数字。</p>
+  <div class="ramp" id="ramp-secondary"></div>
+</section>
+
+<section>
+  <h2>3. 中性色 Neutral（带微蓝灰调，与主色呼应）</h2>
+  <p class="desc">用于正文文字、边框、卡片背景、分隔线，避免使用纯灰导致与品牌色割裂。</p>
+  <div class="ramp" id="ramp-neutral"></div>
+</section>
+
+<section>
+  <h2>4. 语义色 Semantic Colors（状态提示，智慧水务/能源类网站常用于告警、在线状态）</h2>
+  <p class="desc">每组提供「底色 base」用于图标/徽标背景，以及「文字色 text」用于在白底上直接作为文字色（已通过 AA 4.5:1）。</p>
+  <div class="semantic-grid" id="semantic-grid"></div>
+</section>
+
+<section>
+  <h2>5. 推荐搭配 Usage Guidelines</h2>
+  <table class="usage">
+    <thead><tr><th>用途</th><th>颜色</th><th>说明</th></tr></thead>
+    <tbody id="usage-body"></tbody>
+  </table>
+</section>
+
+<section>
+  <h2>6. 可直接调用的代码 Ready-to-use Code</h2>
+  <p class="desc">点击右上角按钮复制整段代码。</p>
+  <pre class="codeblock" id="css-vars"></pre>
+  <pre class="codeblock" id="tailwind-cfg"></pre>
+</section>
+
+<footer>Generated for Energy Matrix · 云工智联 — 颜色数值来自 Logo 像素采样 (RGB) 并按亮度梯度系统化生成</footer>
+</div>
+
+<script>
+const primary = {
+  50:"#EEF4FC",100:"#D8E7F8",200:"#A8C9F0",300:"#74A9E6",400:"#3C86DC",
+  500:"#2065B6",600:"#1A5192",700:"#154175",800:"#0F3057",900:"#0A1F38"
+};
+const secondary = {
+  50:"#FEF6EC",100:"#FCE8CF",200:"#F9D19F",300:"#F6B565",400:"#F39E34",
+  500:"#F2921B",600:"#D47B0C",700:"#AE650A",800:"#874E08",900:"#603806"
+};
+const neutral = {
+  0:"#FFFFFF",50:"#F9FAFA",100:"#F1F2F3",200:"#E3E5E8",300:"#D0D3D7",400:"#9CA3AB",
+  500:"#757F8A",600:"#596069",700:"#42474D",800:"#2A2E32",900:"#1A1C1E",950:"#0A0A0A"
+};
+const semantic = [
+  {name:"成功 Success", base:"#1E9E63", text:"#0F7A48", note:"设备在线 / 缴费成功 / 抄表正常"},
+  {name:"警告 Warning", base:"#EAB308", text:"#946200", note:"账单临近到期 / 用量异常偏高"},
+  {name:"错误 Danger",  base:"#E14B3C", text:"#B5311F", note:"欠费 / 漏水报警 / 设备离线"},
+  {name:"信息 Info",    base:"#3C86DC", text:"#154175", note:"系统通知 / 帮助提示"},
+];
+
+function textColorFor(hex){
+  const r=parseInt(hex.substr(1,2),16), g=parseInt(hex.substr(3,2),16), b=parseInt(hex.substr(5,2),16);
+  const lum=(0.299*r+0.587*g+0.114*b)/255;
+  return lum>0.62 ? "#1A1C1E" : "#FFFFFF";
+}
+
+function copyText(text, el){
+  navigator.clipboard.writeText(text).then(()=>{
+    if(el){
+      el.classList.add("copied-flash");
+      setTimeout(()=>el.classList.remove("copied-flash"), 900);
+    }
+  });
+}
+
+function buildRamp(containerId, ramp, prefix){
+  const el = document.getElementById(containerId);
+  Object.entries(ramp).forEach(([step,hex])=>{
+    const card = document.createElement("div");
+    card.className = "swatch";
+    card.innerHTML = `<div class="fill" style="background:${hex}"></div>
+      <div class="meta"><div class="step">${prefix}-${step}</div><div class="hex">${hex}</div></div>
+      <div class="copied">已复制!</div>`;
+    card.onclick = ()=>copyText(hex, card);
+    el.appendChild(card);
+  });
+}
+buildRamp("ramp-primary", primary, "primary");
+buildRamp("ramp-secondary", secondary, "secondary");
+buildRamp("ramp-neutral", neutral, "neutral");
+
+const semGrid = document.getElementById("semantic-grid");
+semantic.forEach(s=>{
+  const card = document.createElement("div");
+  card.className = "sem-card";
+  card.innerHTML = `
+    <div class="top" style="background:${s.base}"></div>
+    <div class="body">
+      <div class="name">${s.name}</div>
+      <div class="row" data-copy="${s.base}"><span>base</span><span>${s.base}</span></div>
+      <div class="row" data-copy="${s.text}"><span>text</span><span>${s.text}</span></div>
+      <div style="font-size:11px;color:#757F8A;margin-top:4px;">${s.note}</div>
+      <span class="badge pass">AA 文字对比通过</span>
+    </div>`;
+  card.querySelectorAll(".row").forEach(r=>{
+    r.onclick = ()=>copyText(r.getAttribute("data-copy"), r);
+  });
+  semGrid.appendChild(card);
+});
+
+const usage = [
+  ["网站背景 / 页面底色", neutral[0], "整站主背景，保持通透"],
+  ["卡片 / 分区背景", neutral[50], "区分区块层级，不刺眼"],
+  ["正文文字", neutral[800]+" / "+neutral[900], "对比度 12:1+，长文阅读舒适"],
+  ["次要说明文字", neutral[600], "如时间戳、单位、脚注，对比度 6.36:1 达标"],
+  ["边框 / 分割线", neutral[200]+" / "+neutral[300], "卡片描边、表格分隔"],
+  ["导航栏 / 页头", primary[700]+" 或 "+primary[800], "深色底 + 白字，专业稳重"],
+  ["主要按钮 Primary CTA", primary[600]+"（白字）", "对比度 7.97:1，通过 AA"],
+  ["次要按钮 / 强调 CTA", secondary[500]+"（配 "+neutral[950]+" 深色文字）", "橙底配深色字对比度 8.4:1，比配白字（3.2:1）更佳"],
+  ["链接文字", primary[700], "对比度 10.27:1，悬停可用 "+primary[500]],
+  ["页脚 Footer", primary[900]+"（浅灰文字 "+neutral[300]+"）", "呼应 Logo 深蓝，形成视觉收尾"],
+  ["图表/仪表盘强调色", secondary[500]+" + "+primary[600], "柱状图、折线图关键数据点"],
+];
+const tbody = document.getElementById("usage-body");
+usage.forEach(([label,color,note])=>{
+  const tr = document.createElement("tr");
+  const firstHex = color.split(" ")[0];
+  tr.innerHTML = `<td>${label}</td><td><span class="dot" style="background:${firstHex}"></span><code>${color}</code></td><td>${note}</td>`;
+  tbody.appendChild(tr);
+});
+
+const cssVars = `:root {
+  /* Primary — Logo 主蓝 */
+  --color-primary-50: ${primary[50]};
+  --color-primary-100: ${primary[100]};
+  --color-primary-200: ${primary[200]};
+  --color-primary-300: ${primary[300]};
+  --color-primary-400: ${primary[400]};
+  --color-primary-500: ${primary[500]};
+  --color-primary-600: ${primary[600]}; /* 品牌基准色 */
+  --color-primary-700: ${primary[700]};
+  --color-primary-800: ${primary[800]};
+  --color-primary-900: ${primary[900]};
+
+  /* Secondary — Logo 主橙 */
+  --color-secondary-50: ${secondary[50]};
+  --color-secondary-100: ${secondary[100]};
+  --color-secondary-200: ${secondary[200]};
+  --color-secondary-300: ${secondary[300]};
+  --color-secondary-400: ${secondary[400]};
+  --color-secondary-500: ${secondary[500]}; /* 品牌基准色 */
+  --color-secondary-600: ${secondary[600]};
+  --color-secondary-700: ${secondary[700]};
+  --color-secondary-800: ${secondary[800]};
+  --color-secondary-900: ${secondary[900]};
+
+  /* Neutral */
+  --color-neutral-0: ${neutral[0]};
+  --color-neutral-50: ${neutral[50]};
+  --color-neutral-100: ${neutral[100]};
+  --color-neutral-200: ${neutral[200]};
+  --color-neutral-300: ${neutral[300]};
+  --color-neutral-400: ${neutral[400]};
+  --color-neutral-500: ${neutral[500]};
+  --color-neutral-600: ${neutral[600]};
+  --color-neutral-700: ${neutral[700]};
+  --color-neutral-800: ${neutral[800]};
+  --color-neutral-900: ${neutral[900]};
+  --color-neutral-950: ${neutral[950]};
+
+  /* Semantic */
+  --color-success: ${semantic[0].base};
+  --color-success-text: ${semantic[0].text};
+  --color-warning: ${semantic[1].base};
+  --color-warning-text: ${semantic[1].text};
+  --color-danger: ${semantic[2].base};
+  --color-danger-text: ${semantic[2].text};
+  --color-info: ${semantic[3].base};
+  --color-info-text: ${semantic[3].text};
+}`;
+document.getElementById("css-vars").textContent = cssVars;
+
+const twCfg = `// tailwind.config.js
+module.exports = {
+  theme: {
+    extend: {
+      colors: {
+        primary: {
+          50:"${primary[50]}",100:"${primary[100]}",200:"${primary[200]}",300:"${primary[300]}",
+          400:"${primary[400]}",500:"${primary[500]}",600:"${primary[600]}",700:"${primary[700]}",
+          800:"${primary[800]}",900:"${primary[900]}"
+        },
+        secondary: {
+          50:"${secondary[50]}",100:"${secondary[100]}",200:"${secondary[200]}",300:"${secondary[300]}",
+          400:"${secondary[400]}",500:"${secondary[500]}",600:"${secondary[600]}",700:"${secondary[700]}",
+          800:"${secondary[800]}",900:"${secondary[900]}"
+        },
+        success: "${semantic[0].base}",
+        warning: "${semantic[1].base}",
+        danger:  "${semantic[2].base}",
+        info:    "${semantic[3].base}"
+      }
+    }
+  }
+}`;
+document.getElementById("tailwind-cfg").textContent = twCfg;
+</script>
+</body>
+</html>
