@@ -4,12 +4,17 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "build:cloudflare": "opennextjs-cloudflare build",
+    "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
+    "preview": "opennextjs-cloudflare build && wrangler dev",
     "start": "next start",
     "lint": "eslint ."
   },
   "dependencies": {
+    "@opennextjs/cloudflare": "^1.20.2",
     "@radix-ui/react-slot": "^1.1.0",
     "@supabase/supabase-js": "^2.112.3",
+    "bcryptjs": "^3.0.3",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "lucide-react": "^0.468.0",

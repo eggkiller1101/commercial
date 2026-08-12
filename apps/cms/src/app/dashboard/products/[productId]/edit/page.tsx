@@ -22,7 +22,7 @@ export default async function EditProductPage({ params }: EditProductPageProps) 
       <div>
         <h2 className="text-xl font-semibold">产品编辑</h2>
         <p className="mt-1 text-sm text-muted-foreground">
-          当前为 mock 内容，后续会从数据库读取并填充。
+          当前内容从数据库读取并填充。
         </p>
       </div>
 

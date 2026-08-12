@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 
-import type { ProductFormValues } from "./mock-products";
+import type { ProductFormValues } from "./data";
 
 type ProductFormProps = {
   defaultValues?: ProductFormValues;

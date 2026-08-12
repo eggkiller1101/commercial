@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+import { requireApiPermission } from "@/features/auth/guards";
 import { createProduct } from "@/features/products/data";
 
 type ProductRequestBody = {
@@ -10,6 +11,12 @@ type ProductRequestBody = {
 };
 
 export async function POST(request: Request) {
+  const permission = await requireApiPermission("manage_content");
+
+  if (permission.response) {
+    return permission.response;
+  }
+
   const body = (await request.json()) as ProductRequestBody;
 
   if (

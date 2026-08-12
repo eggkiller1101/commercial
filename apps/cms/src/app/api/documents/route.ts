@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+import { requireApiPermission } from "@/features/auth/guards";
 import { createDocument } from "@/features/documents/data";
 
 type DocumentRequestBody = {
@@ -11,6 +12,12 @@ type DocumentRequestBody = {
 };
 
 export async function POST(request: Request) {
+  const permission = await requireApiPermission("manage_content");
+
+  if (permission.response) {
+    return permission.response;
+  }
+
   const body = (await request.json()) as DocumentRequestBody;
 
   if (

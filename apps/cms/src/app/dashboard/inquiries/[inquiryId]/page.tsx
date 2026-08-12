@@ -34,7 +34,7 @@ export default async function InquiryDetailPage({
       <div>
         <h2 className="text-xl font-semibold">询价详情</h2>
         <p className="mt-1 text-sm text-muted-foreground">
-          当前为用户上传的询价表单 mock 内容，后续会从数据库读取。
+          当前询价详情来自数据库，询价单文件需由数据库提供真实文件地址。
         </p>
       </div>
 
@@ -58,16 +58,22 @@ export default async function InquiryDetailPage({
           <div className="mt-2 flex items-center justify-between gap-3 rounded-md border bg-background px-3 py-3 text-sm">
             <div className="flex min-w-0 items-center gap-3">
               <FileSpreadsheet className="h-5 w-5 shrink-0 text-muted-foreground" />
-              <span className="truncate font-medium">{inquiry.quoteFile}</span>
-              <span className="shrink-0 text-xs text-muted-foreground">
-                csv格式
+              <span className="truncate font-medium">
+                {inquiry.quoteFile ?? "暂无上传的询价单"}
               </span>
+              {inquiry.quoteFile ? (
+                <span className="shrink-0 text-xs text-muted-foreground">
+                  csv格式
+                </span>
+              ) : null}
             </div>
 
-            <QuoteDownloadButton
-              filename={inquiry.quoteFile}
-              href={`/api/inquiries/${inquiry.id}/quote`}
-            />
+            {inquiry.quoteFile ? (
+              <QuoteDownloadButton
+                filename={inquiry.quoteFile}
+                href={`/api/inquiries/${inquiry.id}/quote`}
+              />
+            ) : null}
           </div>
         </div>
       </div>

@@ -23,6 +23,7 @@ web_modules/
 
 # Build output
 .next
+.open-next
 out
 dist
 build

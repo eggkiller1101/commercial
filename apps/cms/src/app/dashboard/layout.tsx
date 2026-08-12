@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import {
   Boxes,
   ChevronDown,
@@ -9,10 +10,18 @@ import {
   PencilLine
 } from "lucide-react";
 
+import { LogoutButton } from "@/features/auth/logout-button";
+import {
+  hasPermission,
+  type Permission
+} from "@/features/auth/permissions";
+import { getCmsSession } from "@/features/auth/session";
+
 const sidebarGroups = [
   {
     label: "产品管理",
     icon: Package,
+    permission: "manage_content",
     items: [
       { label: "产品列表", href: "/dashboard/products", icon: LayoutDashboard },
       { label: "产品新增", href: "/dashboard/products/new", icon: PencilLine }
@@ -21,6 +30,7 @@ const sidebarGroups = [
   {
     label: "分类管理",
     icon: Boxes,
+    permission: "manage_content",
     items: [
       {
         label: "分类列表",
@@ -33,6 +43,7 @@ const sidebarGroups = [
   {
     label: "文件管理",
     icon: Files,
+    permission: "manage_content",
     items: [
       {
         label: "文件分类",
@@ -45,17 +56,37 @@ const sidebarGroups = [
   {
     label: "询价管理",
     icon: ClipboardList,
+    permission: "manage_inquiries",
     items: [
       { label: "询价列表", href: "/dashboard/inquiries", icon: LayoutDashboard }
     ]
   }
-];
+] satisfies Array<{
+  icon: React.ElementType;
+  items: Array<{
+    href: string;
+    icon: React.ElementType;
+    label: string;
+  }>;
+  label: string;
+  permission: Permission;
+}>;
 
-export default function DashboardLayout({
+export default async function DashboardLayout({
   children
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const session = await getCmsSession();
+
+  if (!session) {
+    redirect("/");
+  }
+
+  const visibleSidebarGroups = sidebarGroups.filter((group) =>
+    hasPermission(session.roleName, group.permission)
+  );
+
   return (
     <main className="min-h-screen bg-background">
       <aside className="fixed inset-y-0 left-0 z-20 w-64 border-r bg-card">
@@ -66,7 +97,7 @@ export default function DashboardLayout({
         </div>
 
         <nav className="space-y-2 p-3">
-          {sidebarGroups.map((group) => {
+          {visibleSidebarGroups.map((group) => {
             const GroupIcon = group.icon;
 
             return (
@@ -99,8 +130,20 @@ export default function DashboardLayout({
         </nav>
       </aside>
 
-      <header className="fixed left-64 right-0 top-0 z-10 flex h-16 items-center border-b bg-card px-6">
+      <header className="fixed left-64 right-0 top-0 z-10 flex h-16 items-center justify-between border-b bg-card px-6">
         <h1 className="text-lg font-semibold">CMS 首页</h1>
+        <div className="flex items-center gap-3 text-sm">
+          <span className="text-muted-foreground">
+            {session.username} · {session.roleName}
+          </span>
+          <Link
+            className="rounded-md px-3 py-2 text-muted-foreground hover:bg-muted hover:text-foreground"
+            href="/dashboard/account/password"
+          >
+            修改密码
+          </Link>
+          <LogoutButton />
+        </div>
       </header>
 
       <section className="min-h-screen pl-64 pt-16">

@@ -1,10 +1,17 @@
-import {
-  buildInquiryCsv,
-  mockInquiryDetails,
-  mockInquiries,
-  type InquiryDetail
-} from "./mock-inquiries";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+
+export type InquiryDetail = {
+  customerCompany: string;
+  customerId: string;
+  customerName: string;
+  customerPhone: string;
+  email: string;
+  id: string;
+  inquiryTime: string;
+  message: string;
+  productId: string;
+  quoteFile: string | null;
+};
 
 export type InquiryListItem = Pick<
   InquiryDetail,
@@ -59,7 +66,7 @@ function mapInquiryDetail(
     email: inquiry.email ?? "",
     productId: inquiry.product_id ? String(inquiry.product_id) : "",
     message: inquiry.message ?? "",
-    quoteFile: `inquiry-${String(inquiry.id).padStart(3, "0")}.csv`
+    quoteFile: null
   };
 }
 
@@ -100,17 +107,12 @@ export async function getInquiries(params: {
     console.error("Failed to load inquiries from Supabase", error);
   }
 
-  const total = mockInquiries.length;
-  const totalPages = Math.max(Math.ceil(total / params.pageSize), 1);
-  const page = Math.min(Math.max(params.page, 1), totalPages);
-  const start = (page - 1) * params.pageSize;
-
   return {
-    items: mockInquiries.slice(start, start + params.pageSize),
-    page,
+    items: [],
+    page: 1,
     pageSize: params.pageSize,
-    total,
-    totalPages
+    total: 0,
+    totalPages: 1
   };
 }
 
@@ -139,20 +141,17 @@ export async function getInquiryById(
     }
   }
 
-  return mockInquiryDetails[inquiryId] ?? null;
+  return null;
 }
 
-export async function getInquiryQuoteCsv(
+export async function getInquiryQuoteFile(
   inquiryId: string
-): Promise<{ csv: string; filename: string } | null> {
+): Promise<{ content: string; contentType: string; filename: string } | null> {
   const inquiry = await getInquiryById(inquiryId);
 
-  if (!inquiry) {
+  if (!inquiry?.quoteFile) {
     return null;
   }
 
-  return {
-    csv: buildInquiryCsv(inquiry),
-    filename: inquiry.quoteFile
-  };
+  return null;
 }

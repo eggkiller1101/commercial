@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+import { requireApiPermission } from "@/features/auth/guards";
 import { createCategory } from "@/features/categories/data";
 
 type CategoryRequestBody = {
@@ -9,6 +10,12 @@ type CategoryRequestBody = {
 };
 
 export async function POST(request: Request) {
+  const permission = await requireApiPermission("manage_content");
+
+  if (permission.response) {
+    return permission.response;
+  }
+
   const body = (await request.json()) as CategoryRequestBody;
 
   if (

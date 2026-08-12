@@ -1,8 +1,12 @@
-import {
-  mockProductDetails,
-  type ProductFormValues
-} from "./mock-products";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+
+export type ProductFormValues = {
+  category: string;
+  description: string;
+  images: string[];
+  productId: string;
+  productName: string;
+};
 
 export type ProductListItem = {
   id: string;
@@ -42,20 +46,6 @@ const formatter = new Intl.DateTimeFormat("zh-CN", {
   hour: "2-digit",
   minute: "2-digit"
 });
-
-const mockProductList: ProductListItem[] = Array.from(
-  { length: 56 },
-  (_, index) => {
-    const id = String(index + 1);
-    const date = new Date(2026, 7, 10 - (index % 28), 9 + (index % 8), 20);
-
-    return {
-      id,
-      name: `企业产品 ${id.padStart(2, "0")}`,
-      uploadedAt: formatter.format(date)
-    };
-  }
-);
 
 function formatDate(value: string | null) {
   if (!value) {
@@ -191,17 +181,12 @@ export async function getProducts(params: {
     console.error("Failed to load products from Supabase", error);
   }
 
-  const total = mockProductList.length;
-  const totalPages = Math.max(Math.ceil(total / params.pageSize), 1);
-  const page = Math.min(Math.max(params.page, 1), totalPages);
-  const start = (page - 1) * params.pageSize;
-
   return {
-    items: mockProductList.slice(start, start + params.pageSize),
-    page,
+    items: [],
+    page: 1,
     pageSize: params.pageSize,
-    total,
-    totalPages
+    total: 0,
+    totalPages: 1
   };
 }
 
@@ -230,5 +215,5 @@ export async function getProductById(
     }
   }
 
-  return mockProductDetails[productId] ?? null;
+  return null;
 }

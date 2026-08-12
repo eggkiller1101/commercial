@@ -9,6 +9,40 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      admin_users: {
+        Row: {
+          created_at: string;
+          id: number;
+          is_active: boolean;
+          last_login_at: string | null;
+          password_hash: string;
+          role_id: number | null;
+          updated_at: string;
+          username: string;
+        };
+        Insert: Partial<Database["public"]["Tables"]["admin_users"]["Row"]>;
+        Update: Partial<Database["public"]["Tables"]["admin_users"]["Row"]>;
+        Relationships: [
+          {
+            foreignKeyName: "admin_users_role_id_fkey";
+            columns: ["role_id"];
+            isOneToOne: false;
+            referencedRelation: "roles";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
+      roles: {
+        Row: {
+          created_at: string;
+          description: string | null;
+          id: number;
+          name: string;
+        };
+        Insert: Partial<Database["public"]["Tables"]["roles"]["Row"]>;
+        Update: Partial<Database["public"]["Tables"]["roles"]["Row"]>;
+        Relationships: [];
+      };
       categories: {
         Row: {
           banner_image_url: string | null;
