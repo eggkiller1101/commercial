@@ -1,5 +1,4 @@
-import bcrypt from "bcryptjs";
-
+import { hashPassword, verifyPassword } from "@/features/auth/password";
 import { normalizeAdminRole } from "@/features/auth/permissions";
 import { createSupabaseAdminClient } from "@/lib/supabase/server";
 
@@ -49,10 +48,7 @@ export async function verifyAdminLogin(
     };
   }
 
-  const isPasswordValid = await bcrypt.compare(
-    password,
-    adminUser.password_hash
-  );
+  const isPasswordValid = await verifyPassword(password, adminUser.password_hash);
 
   if (!isPasswordValid) {
     return {
@@ -105,7 +101,7 @@ export async function updateAdminPassword(params: {
     };
   }
 
-  const isCurrentPasswordValid = await bcrypt.compare(
+  const isCurrentPasswordValid = await verifyPassword(
     params.currentPassword,
     adminUser.password_hash
   );
@@ -117,7 +113,7 @@ export async function updateAdminPassword(params: {
     };
   }
 
-  const passwordHash = await bcrypt.hash(params.newPassword, 10);
+  const passwordHash = await hashPassword(params.newPassword);
   const { error: updateError } = await supabase
     .from("admin_users")
     .update({
