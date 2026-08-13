@@ -2,7 +2,7 @@
   "name": "commercial",
   "private": true,
   "scripts": {
-    "dev:cms": "npm run dev --workspace @commercial/cms",
+    "dev:cms": "node scripts/dev-cms.mjs",
     "build:cms": "npm run build --workspace @commercial/cms",
     "lint:cms": "npm run lint --workspace @commercial/cms"
   },
