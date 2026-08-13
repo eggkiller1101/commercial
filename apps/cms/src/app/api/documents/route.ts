@@ -22,12 +22,11 @@ export async function POST(request: Request) {
 
   if (
     !body.title?.trim() ||
-    !body.fileUrl?.trim() ||
     !body.fileType?.trim() ||
     !body.language?.trim()
   ) {
     return NextResponse.json(
-      { message: "文件标题、文件地址、文件类型、语言均为必填" },
+      { message: "文件标题、文件类型、语言均为必填" },
       { status: 400 }
     );
   }

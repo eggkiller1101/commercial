@@ -6,7 +6,7 @@ import {
 export type DocumentFormValues = {
   documentId?: string;
   fileType: string;
-  fileUrl: string;
+  fileUrl: string | null;
   language: string;
   title: string;
   version: string;
@@ -20,7 +20,7 @@ export type DocumentListItem = {
 
 export type CreateDocumentInput = {
   fileType: string;
-  fileUrl: string;
+  fileUrl?: string;
   language: string;
   title: string;
   version: string;
@@ -68,6 +68,13 @@ export async function createDocument(
   if (!supabase) {
     return {
       message: "Supabase service role 尚未配置，无法写入文件",
+      ok: false
+    };
+  }
+
+  if (!input.fileUrl?.trim()) {
+    return {
+      message: "文件存储尚未配置，无法生成真实文件地址",
       ok: false
     };
   }
@@ -179,7 +186,7 @@ export async function getDocumentById(
   return {
     documentId: String(data.id),
     fileType: data.file_type,
-    fileUrl: data.file_url,
+    fileUrl: data.file_url || null,
     language: data.language,
     title: data.title,
     version: data.version ?? ""

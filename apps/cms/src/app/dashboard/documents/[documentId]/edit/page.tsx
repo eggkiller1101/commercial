@@ -28,7 +28,7 @@ export default async function EditDocumentPage({
         </p>
       </div>
 
-      <DocumentForm defaultValues={document} />
+      <DocumentForm defaultValues={document} mode="edit" />
     </div>
   );
 }

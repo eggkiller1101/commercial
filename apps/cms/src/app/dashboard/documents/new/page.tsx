@@ -6,7 +6,7 @@ export default function NewDocumentPage() {
       <div>
         <h2 className="text-xl font-semibold">文件新增</h2>
         <p className="mt-1 text-sm text-muted-foreground">
-          填写文件基础信息并保存到 documents 表。
+          上传文件并填写基础信息。文件存储接入后会保存到 documents 表。
         </p>
       </div>
 
