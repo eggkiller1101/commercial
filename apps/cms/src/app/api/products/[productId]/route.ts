@@ -1,7 +1,13 @@
 import { NextResponse } from "next/server";
 
 import { requireApiPermission } from "@/features/auth/guards";
-import { createProduct } from "@/features/products/data";
+import { updateProduct } from "@/features/products/data";
+
+type ProductRouteProps = {
+  params: Promise<{
+    productId: string;
+  }>;
+};
 
 type ProductRequestBody = {
   applicationNotes?: string;
@@ -15,13 +21,14 @@ type ProductRequestBody = {
   summary?: string;
 };
 
-export async function POST(request: Request) {
+export async function PATCH(request: Request, { params }: ProductRouteProps) {
   const permission = await requireApiPermission("manage_content");
 
   if (permission.response) {
     return permission.response;
   }
 
+  const { productId } = await params;
   const body = (await request.json()) as ProductRequestBody;
 
   if (
@@ -42,8 +49,9 @@ export async function POST(request: Request) {
     );
   }
 
-  const result = await createProduct({
+  const result = await updateProduct({
     applicationNotes: body.applicationNotes ?? "",
+    databaseId: productId,
     description: body.description,
     isFeatured: body.isFeatured === true,
     primaryCategoryId: body.primaryCategoryId,
@@ -58,5 +66,5 @@ export async function POST(request: Request) {
     return NextResponse.json({ message: result.message }, { status: 400 });
   }
 
-  return NextResponse.json(result, { status: 201 });
+  return NextResponse.json(result);
 }

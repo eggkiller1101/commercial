@@ -1,6 +1,9 @@
 import { ProductForm } from "@/features/products/product-form";
+import { getProductFormOptions } from "@/features/products/data";
 
-export default function NewProductPage() {
+export default async function NewProductPage() {
+  const options = await getProductFormOptions();
+
   return (
     <div className="mx-auto max-w-3xl space-y-6">
       <div>
@@ -10,7 +13,7 @@ export default function NewProductPage() {
         </p>
       </div>
 
-      <ProductForm />
+      <ProductForm options={options} />
     </div>
   );
 }

@@ -2,44 +2,44 @@ import Link from "next/link";
 import { ChevronLeft, ChevronRight, Pencil } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { getProducts } from "@/features/products/data";
-import { ProductStatusButton } from "@/features/products/product-status-button";
+import { getCases } from "@/features/cases/data";
+import { CaseStatusButton } from "@/features/cases/case-status-button";
 import { cn } from "@/lib/utils";
 
 const PAGE_SIZE = 20;
 
-type ProductsPageProps = {
+type CasesPageProps = {
   searchParams: Promise<{
     page?: string;
   }>;
 };
 
-export default async function ProductsPage({ searchParams }: ProductsPageProps) {
+export default async function CasesPage({ searchParams }: CasesPageProps) {
   const params = await searchParams;
   const requestedPage = Number.parseInt(params.page ?? "1", 10) || 1;
-  const products = await getProducts({
+  const cases = await getCases({
     page: requestedPage,
     pageSize: PAGE_SIZE
   });
 
-  function getProductStatusLabel(status: string) {
+  function getCaseStatusLabel(status: string) {
     if (status === "published") {
       return "已上架";
     }
 
-    if (status === "unpublished") {
+    if (status === "archived") {
       return "已下架";
     }
 
-    return "状态未知";
+    return "草稿";
   }
 
-  function getProductStatusClassName(status: string) {
+  function getCaseStatusClassName(status: string) {
     if (status === "published") {
       return "border-emerald-200 bg-emerald-50 text-emerald-700";
     }
 
-    if (status === "unpublished") {
+    if (status === "archived") {
       return "border-slate-200 bg-slate-50 text-slate-600";
     }
 
@@ -49,9 +49,9 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-semibold">产品列表</h2>
+        <h2 className="text-xl font-semibold">案例列表</h2>
         <p className="mt-1 text-sm text-muted-foreground">
-          共 {products.total} 条产品，每页显示 {products.pageSize} 条。
+          共 {cases.total} 条案例，每页显示 {cases.pageSize} 条。
         </p>
       </div>
 
@@ -59,40 +59,40 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
         <table className="w-full table-fixed border-collapse text-sm">
           <thead className="bg-muted text-muted-foreground">
             <tr>
-              <th className="h-11 px-4 text-left font-medium">产品名</th>
+              <th className="h-11 px-4 text-left font-medium">案例标题</th>
               <th className="h-11 w-56 px-4 text-left font-medium">上传时间</th>
               <th className="h-11 w-72 px-4 text-left font-medium">操作</th>
             </tr>
           </thead>
           <tbody>
-            {products.items.length ? (
-              products.items.map((product) => (
-                <tr className="border-t" key={product.id}>
+            {cases.items.length ? (
+              cases.items.map((caseItem) => (
+                <tr className="border-t" key={caseItem.id}>
                   <td className="h-12 truncate px-4 font-medium">
-                    {product.name}
+                    {caseItem.title}
                   </td>
                   <td className="h-12 px-4 text-muted-foreground">
-                    {product.uploadedAt}
+                    {caseItem.uploadedAt}
                   </td>
                   <td className="h-12 px-4">
                     <div className="flex items-center gap-2">
                       <Button asChild size="sm" variant="ghost">
-                        <Link href={`/dashboard/products/${product.id}/edit`}>
+                        <Link href={`/dashboard/cases/${caseItem.id}/edit`}>
                           <Pencil className="mr-2 h-4 w-4" />
                           编辑
                         </Link>
                       </Button>
-                      <ProductStatusButton
-                        productId={product.id}
-                        status={product.status}
+                      <CaseStatusButton
+                        caseId={caseItem.id}
+                        status={caseItem.status}
                       />
                       <span
                         className={cn(
                           "inline-flex h-7 items-center rounded-full border px-2.5 text-xs font-medium",
-                          getProductStatusClassName(product.status)
+                          getCaseStatusClassName(caseItem.status)
                         )}
                       >
-                        {getProductStatusLabel(product.status)}
+                        {getCaseStatusLabel(caseItem.status)}
                       </span>
                     </div>
                   </td>
@@ -104,7 +104,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
                   className="h-32 px-4 text-center text-sm text-muted-foreground"
                   colSpan={3}
                 >
-                  暂无产品数据
+                  暂无案例数据
                 </td>
               </tr>
             )}
@@ -114,28 +114,26 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
 
       <div className="flex items-center justify-between">
         <p className="text-sm text-muted-foreground">
-          第 {products.page} 页 / 共 {products.totalPages} 页
+          第 {cases.page} 页 / 共 {cases.totalPages} 页
         </p>
 
         <div className="flex items-center gap-2">
           <Button
             asChild
-            className={cn(
-              products.page <= 1 && "pointer-events-none opacity-50"
-            )}
+            className={cn(cases.page <= 1 && "pointer-events-none opacity-50")}
             size="sm"
             variant="ghost"
           >
             <Link
-              aria-disabled={products.page <= 1}
-              href={`/dashboard/products?page=${Math.max(products.page - 1, 1)}`}
+              aria-disabled={cases.page <= 1}
+              href={`/dashboard/cases?page=${Math.max(cases.page - 1, 1)}`}
             >
               <ChevronLeft className="mr-1 h-4 w-4" />
               上一页
             </Link>
           </Button>
 
-          {Array.from({ length: products.totalPages }, (_, index) => {
+          {Array.from({ length: cases.totalPages }, (_, index) => {
             const page = index + 1;
 
             return (
@@ -144,9 +142,9 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
                 className="w-9 px-0"
                 key={page}
                 size="sm"
-                variant={page === products.page ? "default" : "ghost"}
+                variant={page === cases.page ? "default" : "ghost"}
               >
-                <Link href={`/dashboard/products?page=${page}`}>{page}</Link>
+                <Link href={`/dashboard/cases?page=${page}`}>{page}</Link>
               </Button>
             );
           })}
@@ -154,17 +152,16 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
           <Button
             asChild
             className={cn(
-              products.page >= products.totalPages &&
-                "pointer-events-none opacity-50"
+              cases.page >= cases.totalPages && "pointer-events-none opacity-50"
             )}
             size="sm"
             variant="ghost"
           >
             <Link
-              aria-disabled={products.page >= products.totalPages}
-              href={`/dashboard/products?page=${Math.min(
-                products.page + 1,
-                products.totalPages
+              aria-disabled={cases.page >= cases.totalPages}
+              href={`/dashboard/cases?page=${Math.min(
+                cases.page + 1,
+                cases.totalPages
               )}`}
             >
               下一页

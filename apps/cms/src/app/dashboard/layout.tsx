@@ -5,6 +5,7 @@ import {
   ChevronDown,
   ClipboardList,
   Files,
+  FileText,
   LayoutDashboard,
   Package,
   PencilLine
@@ -33,11 +34,25 @@ const sidebarGroups = [
     permission: "manage_content",
     items: [
       {
-        label: "分类列表",
+        label: "一级分类列表",
         href: "/dashboard/categories",
         icon: LayoutDashboard
       },
-      { label: "分类新增", href: "/dashboard/categories/new", icon: PencilLine }
+      {
+        label: "一级分类新增",
+        href: "/dashboard/categories/new",
+        icon: PencilLine
+      },
+      {
+        label: "二级分类列表",
+        href: "/dashboard/categories/subcategories",
+        icon: LayoutDashboard
+      },
+      {
+        label: "二级分类新增",
+        href: "/dashboard/categories/subcategories/new",
+        icon: PencilLine
+      }
     ]
   },
   {
@@ -51,6 +66,19 @@ const sidebarGroups = [
         icon: LayoutDashboard
       },
       { label: "文件新增", href: "/dashboard/documents/new", icon: PencilLine }
+    ]
+  },
+  {
+    label: "案例管理",
+    icon: FileText,
+    permission: "manage_content",
+    items: [
+      {
+        label: "案例列表",
+        href: "/dashboard/cases",
+        icon: LayoutDashboard
+      },
+      { label: "案例新增", href: "/dashboard/cases/new", icon: PencilLine }
     ]
   },
   {
@@ -102,9 +130,14 @@ export default async function DashboardLayout({
 
             return (
               <div key={group.label}>
-                <button className="flex h-10 w-full items-center gap-3 rounded-md px-3 text-left text-sm font-medium hover:bg-accent">
+                <button
+                  className="flex h-10 w-full items-center gap-3 rounded-md px-3 text-left text-sm font-medium hover:bg-accent"
+                  title={group.label}
+                >
                   <GroupIcon className="h-4 w-4 text-muted-foreground" />
-                  <span className="min-w-0 flex-1">{group.label}</span>
+                  <span className="min-w-0 flex-1 truncate">
+                    {group.label}
+                  </span>
                   <ChevronDown className="h-4 w-4 text-muted-foreground" />
                 </button>
 
@@ -117,9 +150,10 @@ export default async function DashboardLayout({
                         className="flex h-9 w-full items-center gap-2 rounded-md px-3 text-left text-sm text-muted-foreground hover:bg-muted hover:text-foreground"
                         href={item.href}
                         key={item.label}
+                        title={item.label}
                       >
-                        <ItemIcon className="h-4 w-4" />
-                        <span>{item.label}</span>
+                        <ItemIcon className="h-4 w-4 shrink-0" />
+                        <span className="min-w-0 truncate">{item.label}</span>
                       </Link>
                     );
                   })}
