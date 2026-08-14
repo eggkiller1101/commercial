@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>产品详情 - 云工智上</title>
+  <link rel="icon" href="assets/icons/logo-mark.svg" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/layout.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/pages.css" />
+</head>
+<body>
+  <div id="data-source-banner" class="data-source-banner"></div>
+  <div id="site-header"></div>
+
+  <div id="breadcrumb-mount"></div>
+
+  <main id="product-main">
+    <div class="container">
+      <div style="display:grid;grid-template-columns:440px 1fr;gap:48px;padding-bottom:16px;" id="product-overview">
+        <div id="gallery"></div>
+        <div id="product-info"></div>
+      </div>
+
+      <section id="tabs-section">
+        <div class="tabs-nav" id="tabs-nav"></div>
+        <div id="tabs-content"></div>
+      </section>
+
+      <section class="section related-products" id="related-section"></section>
+
+      <section class="section" id="inquiry">
+        <div class="section-head">
+          <div>
+            <h2>立即询价</h2>
+            <p>咨询产品 <strong id="inquiry-product-name"></strong>，工程师将在 1 个工作日内与您联系</p>
+          </div>
+        </div>
+
+        <div class="inquiry-card" style="max-width:640px;">
+          <form id="inquiry-form">
+            <div class="form-grid-2">
+              <div class="form-row">
+                <label>姓名 <span class="required">*</span></label>
+                <input type="text" name="name" required placeholder="请输入您的姓名" />
+              </div>
+              <div class="form-row">
+                <label>公司名称</label>
+                <input type="text" name="company" placeholder="请输入公司名称" />
+              </div>
+            </div>
+            <div class="form-grid-2">
+              <div class="form-row">
+                <label>联系电话 <span class="required">*</span></label>
+                <input type="tel" name="phone" required placeholder="请输入手机号 / 座机号" />
+              </div>
+              <div class="form-row">
+                <label>邮箱</label>
+                <input type="email" name="email" placeholder="用于接收报价邮件" />
+              </div>
+            </div>
+            <div class="form-row">
+              <label>询价内容</label>
+              <textarea name="message" rows="4" placeholder="请描述管径、数量、项目场景等信息，方便我们更准确报价"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">提交询价</button>
+            <div class="form-feedback" id="inquiry-feedback"></div>
+          </form>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <div id="site-footer"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/mock-data.js"></script>
+  <script src="js/data-service.js"></script>
+  <script src="js/quote-cart.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/ui-common.js"></script>
+  <script src="js/product-page.js"></script>
+</body>
+</html>

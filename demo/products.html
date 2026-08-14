@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>产品中心 - 云工智上</title>
+  <link rel="icon" href="assets/icons/logo-mark.svg" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/layout.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/pages.css" />
+</head>
+<body>
+  <div id="data-source-banner" class="data-source-banner"></div>
+  <div id="site-header"></div>
+
+  <div id="breadcrumb-mount"></div>
+
+  <main class="container">
+    <section class="section" style="padding-top:14px;">
+      <div class="category-tree-diagram" id="category-tree-diagram"></div>
+    </section>
+
+    <div class="layout-with-sidebar">
+      <aside>
+        <div class="filter-panel">
+          <h4>产品分类</h4>
+          <div id="category-tree"></div>
+        </div>
+        <div id="attr-filter-panel"></div>
+      </aside>
+
+      <section>
+        <div class="search-keyword-banner" id="search-keyword-banner" style="display:none;background:var(--primary-50);color:var(--primary-800);padding:10px 16px;border-radius:var(--radius-sm);font-size:13.5px;margin-bottom:16px;"></div>
+        <div class="results-toolbar">
+          <div class="results-count" id="results-count">共 0 款产品</div>
+          <div class="toolbar-right">
+            <div class="search-box">
+              <span>🔍</span>
+              <input type="search" id="search-input" placeholder="搜索产品名称 / 型号" />
+            </div>
+            <select id="sort-select" class="sort-select">
+              <option value="newest">最新发布</option>
+              <option value="name_asc">名称 A-Z</option>
+              <option value="model_asc">型号 A-Z</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="active-filters" id="active-filters"></div>
+
+        <div class="product-grid" id="product-grid"></div>
+
+        <div class="pagination" id="pagination"></div>
+      </section>
+    </div>
+
+    <section class="section">
+      <div class="inquiry-card" style="display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;">
+        <div>
+          <h3 style="font-size:18px;margin-bottom:6px;" data-i18n="home.contactHeading">需要产品选型或技术支持？</h3>
+          <p class="text-muted" data-i18n="home.contactDesc">进入任意产品详情页即可加入询价清单，或直接前往联系我们页面提交项目咨询；工程师会在 1 个工作日内与您联系，国际项目支持全英文对接。</p>
+        </div>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;">
+          <a class="btn btn-primary" href="products.html" data-i18n="home.browseProducts">浏览产品中心</a>
+          <a class="btn btn-primary" href="contact.html" data-i18n="home.ctaContact">联系我们</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="site-footer"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/mock-data.js"></script>
+  <script src="js/data-service.js"></script>
+  <script src="js/quote-cart.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/ui-common.js"></script>
+  <script src="js/products-page.js"></script>
+</body>
+</html>
