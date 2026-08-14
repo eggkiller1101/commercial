@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>项目案例 - 云工智上</title>
+  <link rel="icon" href="assets/icons/logo-mark.svg" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/layout.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/pages.css" />
+</head>
+<body>
+  <div id="data-source-banner" class="data-source-banner"></div>
+  <div id="site-header"></div>
+
+  <div id="breadcrumb-mount"></div>
+
+  <div class="hero hero-compact">
+    <div class="container hero-inner">
+      <div class="hero-eyebrow">项目案例</div>
+      <h1>覆盖商旅、能源、工业与海外总包的项目实践</h1>
+      <p>以下为代表性项目场景说明，具体项目名称与业主信息以保密协议为准，详情请联系工程师索取参考案例。</p>
+    </div>
+  </div>
+
+  <main class="container" style="padding-bottom:64px;">
+    <section class="section" style="padding-top:20px;">
+      <div class="resource-filter-bar" id="case-filter-bar">
+        <button type="button" class="is-active" data-tag="all">全部</button>
+        <button type="button" data-tag="hospitality">商旅交通建筑</button>
+        <button type="button" data-tag="energy">能源核心场景</button>
+        <button type="button" data-tag="industrial">通用工业与市政基建</button>
+        <button type="button" data-tag="overseas">海外 EPC</button>
+      </div>
+
+      <div class="case-card-grid" id="case-grid"></div>
+    </section>
+
+    <section class="section">
+      <div class="inquiry-card" style="display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;">
+        <div>
+          <h3 style="font-size:16px;margin-bottom:6px;">想了解某类项目的详细实施方案？</h3>
+          <p class="text-muted">告诉我们您关注的行业场景，工程师会提供相应的参考案例与技术资料。</p>
+        </div>
+        <a class="btn btn-primary" href="contact.html">获取参考案例</a>
+      </div>
+    </section>
+  </main>
+
+  <div id="site-footer"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/mock-data.js"></script>
+  <script src="js/data-service.js"></script>
+  <script src="js/quote-cart.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/ui-common.js"></script>
+  <script src="js/cases-page.js"></script>
+</body>
+</html>

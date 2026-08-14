@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>行业应用 - 云工智上</title>
+  <link rel="icon" href="assets/icons/logo-mark.svg" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/layout.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/pages.css" />
+</head>
+<body>
+  <div id="data-source-banner" class="data-source-banner"></div>
+  <div id="site-header"></div>
+
+  <div id="breadcrumb-mount"></div>
+
+  <div class="hero hero-compact">
+    <div class="container hero-inner">
+      <div class="hero-eyebrow">行业应用</div>
+      <h1>四大核心场景，覆盖商旅、能源、工业与出海工程</h1>
+      <p>依托唯特利全球产品体系与本地化技术服务能力，为不同行业场景提供成套管道连接与消防解决方案。</p>
+    </div>
+  </div>
+
+  <main class="container" style="padding-bottom:64px;">
+    <section class="section" style="padding-top:20px;">
+      <div class="icon-card-grid cols-2" id="industry-grid">
+        <div class="icon-feature-card">
+          <span class="icon-wrap"><img src="assets/icons/scenario-hospitality.svg" alt="" /></span>
+          <h3>商旅交通建筑</h3>
+          <p>高端酒店、机场航站楼、候机廊桥、交通枢纽、大型商业综合体等场景，对消防喷淋系统的可靠性与验收合规性要求极高，需要成套认证产品与规范化施工配合。</p>
+          <div class="tag-list">
+            <span>消防喷淋系统</span><span>信号阀组</span><span>沟槽卡箍</span><span>消防验收支持</span>
+          </div>
+          <p style="margin-top:14px;"><a class="btn btn-outline btn-sm" href="products.html?category=fire-protection-solutions">查看适用产品 →</a></p>
+        </div>
+
+        <div class="icon-feature-card">
+          <span class="icon-wrap"><img src="assets/icons/scenario-energy.svg" alt="" /></span>
+          <h3>能源核心场景</h3>
+          <p>油气储运（长输管线 / LNG 接收站 / 油库）、石油化工（炼化一体化 / 化工园区）等高精高危工况，需要耐腐蚀、耐高压的工业级管道连接产品与专属技术支持。</p>
+          <div class="tag-list">
+            <span>沟槽式管件</span><span>法兰接头</span><span>高压等级产品</span><span>防爆耐腐蚀</span>
+          </div>
+          <p style="margin-top:14px;"><a class="btn btn-outline btn-sm" href="products.html?category=pipe-joining-solutions">查看适用产品 →</a></p>
+        </div>
+
+        <div class="icon-feature-card">
+          <span class="icon-wrap"><img src="assets/icons/scenario-industrial.svg" alt="" /></span>
+          <h3>通用工业与市政基建</h3>
+          <p>工业厂房、矿山、发电、海水淡化、污水处理、隧道、大直径埋地给排水等场景，覆盖多种管径与压力等级的标准化管路连接需求。</p>
+          <div class="tag-list">
+            <span>标准沟槽卡箍</span><span>异径接头</span><span>批量标准化施工</span>
+          </div>
+          <p style="margin-top:14px;"><a class="btn btn-outline btn-sm" href="products.html">查看适用产品 →</a></p>
+        </div>
+
+        <div class="icon-feature-card">
+          <span class="icon-wrap"><img src="assets/icons/scenario-global.svg" alt="" /></span>
+          <h3>海外 EPC / 出海工程</h3>
+          <p>东南亚、中东、非洲、欧洲、美洲——中国企业出海总包项目专属服务，提供全英文技术资料、海外驻场技术指导与国际项目全套合规资料包。</p>
+          <div class="tag-list">
+            <span>全英文技术对接</span><span>海外驻场支持</span><span>国际合规资料</span>
+          </div>
+          <p style="margin-top:14px;"><a class="btn btn-outline btn-sm" href="contact.html">咨询海外项目 →</a></p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div>
+          <h2>相关项目案例</h2>
+          <p>查看不同行业场景下的项目落地情况</p>
+        </div>
+        <a class="view-all" href="cases.html">查看全部案例 →</a>
+      </div>
+      <div class="inquiry-card" style="display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;">
+        <div>
+          <h3 style="font-size:16px;margin-bottom:6px;">找不到您所在的行业场景？</h3>
+          <p class="text-muted">告诉我们您的项目类型与技术要求，工程师会为您推荐合适的产品组合与实施方案。</p>
+        </div>
+        <a class="btn btn-primary" href="contact.html">咨询工程师</a>
+      </div>
+    </section>
+  </main>
+
+  <div id="site-footer"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/mock-data.js"></script>
+  <script src="js/data-service.js"></script>
+  <script src="js/quote-cart.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/ui-common.js"></script>
+  <script src="js/industries-page.js"></script>
+</body>
+</html>

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>技术与服务 - 云工智上</title>
+  <link rel="icon" href="assets/icons/logo-mark.svg" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/layout.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/pages.css" />
+</head>
+<body>
+  <div id="data-source-banner" class="data-source-banner"></div>
+  <div id="site-header"></div>
+
+  <div id="breadcrumb-mount"></div>
+
+  <div class="hero hero-compact">
+    <div class="container hero-inner">
+      <div class="hero-eyebrow">技术与服务</div>
+      <h1>图纸国际化 · 产品全球化 · 施工标准化 · 服务本地化</h1>
+      <p>从前期方案设计到全周期运维，云工智上提供一站式技术服务，打破普通代理商仅做国内贸易的局限。</p>
+    </div>
+  </div>
+
+  <main class="container" style="padding-bottom:64px;">
+    <section class="section" style="padding-top:20px;">
+      <div class="icon-card-grid">
+        <div class="icon-feature-card">
+          <span class="icon-wrap"><img src="assets/icons/adv-supply.svg" alt="" /></span>
+          <h3>全球原厂正品供货</h3>
+          <p>唯特利授权渠道，调度北美、欧洲、亚太全球工厂货源，支持国标 / 美标 / 欧标多制式产品批量供货，保证正品与稳定交期。</p>
+          <div class="tag-list"><span>原厂正品</span><span>多制式产品</span><span>批量供货</span></div>
+        </div>
+        <div class="icon-feature-card">
+          <span class="icon-wrap"><img src="assets/icons/adv-design.svg" alt="" /></span>
+          <h3>前期技术方案</h3>
+          <p>BIM / VDC 虚拟设计、碰撞检测、材料精准算量、工况选型建议，适配项目属地认证与产地要求，降低设计返工风险。</p>
+          <div class="tag-list"><span>BIM / VDC</span><span>碰撞检测</span><span>算量与选型</span></div>
+        </div>
+        <div class="icon-feature-card">
+          <span class="icon-wrap"><img src="assets/icons/adv-lifecycle.svg" alt="" /></span>
+          <h3>全周期技术落地</h3>
+          <p>选型咨询、现场技术交底、安装工艺培训，验收阶段提供全套资质与检测报告，配合消防验收与项目竣工流程。</p>
+          <div class="tag-list"><span>现场技术交底</span><span>安装培训</span><span>验收资料</span></div>
+        </div>
+        <div class="icon-feature-card">
+          <span class="icon-wrap"><img src="assets/icons/adv-overseas.svg" alt="" /></span>
+          <h3>海外专属服务</h3>
+          <p>全英文技术对接、海外驻场技术指导、国际项目全套合规资料包，解决出海项目落地的语言、标准、供应链三大痛点。</p>
+          <div class="tag-list"><span>全英文对接</span><span>驻场指导</span><span>合规资料包</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div>
+          <h2>标准服务流程</h2>
+          <p>从需求接洽到运维支持，五个阶段全程跟进</p>
+        </div>
+      </div>
+      <div class="process-steps" style="grid-template-columns:repeat(5, 1fr);">
+        <div class="process-step">
+          <div class="step-num">1</div>
+          <h4>需求接洽</h4>
+          <p>了解项目背景、管径压力等级与工期要求</p>
+        </div>
+        <div class="process-step">
+          <div class="step-num">2</div>
+          <h4>方案设计</h4>
+          <p>BIM 建模、碰撞检测、材料算量与产品选型</p>
+        </div>
+        <div class="process-step">
+          <div class="step-num">3</div>
+          <h4>供货实施</h4>
+          <p>全球调货、跨境物流与现场交付</p>
+        </div>
+        <div class="process-step">
+          <div class="step-num">4</div>
+          <h4>安装调试</h4>
+          <p>现场技术交底、安装工艺培训与调试</p>
+        </div>
+        <div class="process-step">
+          <div class="step-num">5</div>
+          <h4>验收运维</h4>
+          <p>提供验收资料，全周期运维与备件支持</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="inquiry-card" style="display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;">
+        <div>
+          <h3 style="font-size:16px;margin-bottom:6px;">需要技术方案支持？</h3>
+          <p class="text-muted">提供项目图纸与技术要求，工程师会给出选型建议与初步方案。</p>
+        </div>
+        <a class="btn btn-primary" href="contact.html">联系工程师</a>
+      </div>
+    </section>
+  </main>
+
+  <div id="site-footer"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/mock-data.js"></script>
+  <script src="js/data-service.js"></script>
+  <script src="js/quote-cart.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/ui-common.js"></script>
+  <script src="js/services-page.js"></script>
+</body>
+</html>
