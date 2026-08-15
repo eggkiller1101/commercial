@@ -242,7 +242,6 @@ const UI = (() => {
                 <a href="contact.html" data-i18n="footer.onlineInquiry"></a>
               </li>
             </ul>
-            <p class="text-muted" style="font-size:12px;color:var(--neutral-400);margin-top:10px;" data-i18n="footer.responseNote"></p>
           </div>
         </div>
         <div class="container footer-bottom">

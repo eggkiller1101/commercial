@@ -394,3 +394,12 @@ CREATE TRIGGER trg_site_settings_updated_at
     FOR EACH ROW EXECUTE FUNCTION set_updated_at();
 
 COMMENT ON TABLE site_settings IS '存放全局配置项,如公司联系方式、SEO默认值、备案号等 key-value 数据';
+
+
+
+ALTER TABLE products
+    ADD CONSTRAINT products_status_check
+    CHECK (status IN ('published','unpublished'));
+
+ALTER TABLE products
+    ALTER COLUMN status SET DEFAULT 'unpublished';
