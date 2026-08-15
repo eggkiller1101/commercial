@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 820" width="1920" height="820">
+  <defs>
+    <pattern id="bpGrid" width="80" height="80" patternUnits="userSpaceOnUse">
+      <path d="M80 0H0V80" fill="none" stroke="#3C86DC" stroke-opacity="0.10" stroke-width="1"/>
+    </pattern>
+    <pattern id="bpDots" width="20" height="20" patternUnits="userSpaceOnUse">
+      <circle cx="1.4" cy="1.4" r="1.3" fill="#9CC3EE" opacity="0.18"/>
+    </pattern>
+  </defs>
+
+  <!-- 底色：品牌深蓝 -->
+  <rect width="1920" height="820" fill="#0A1F38"/>
+  <rect width="1920" height="820" fill="url(#bpGrid)"/>
+  <rect width="1920" height="820" fill="url(#bpDots)"/>
+
+  <!-- 全球据点标记（呼应"布局全球"） -->
+  <g stroke="#74A9E6" stroke-width="1.5" fill="none" opacity="0.55">
+    <circle cx="220" cy="150" r="7"/>
+    <circle cx="220" cy="150" r="14"/>
+    <circle cx="520" cy="90" r="6"/>
+    <circle cx="520" cy="90" r="12"/>
+    <circle cx="360" cy="640" r="6"/>
+    <circle cx="360" cy="640" r="12"/>
+  </g>
+  <g fill="#F2921B">
+    <circle cx="220" cy="150" r="3"/>
+    <circle cx="520" cy="90" r="2.6"/>
+    <circle cx="360" cy="640" r="2.6"/>
+  </g>
+  <g stroke="#3C86DC" stroke-width="1" stroke-dasharray="4 5" opacity="0.4" fill="none">
+    <path d="M220 150 L520 90"/>
+    <path d="M220 150 L360 640"/>
+  </g>
+
+  <!-- 管道系统示意图（沟槽卡箍 + 阀门），置于画面右侧 -->
+  <g transform="translate(880,0)">
+    <!-- 横向管道 1 -->
+    <rect x="60" y="150" width="820" height="42" rx="21" fill="#154175" stroke="#3C86DC" stroke-width="1.5"/>
+    <g>
+      <rect x="230" y="140" width="46" height="62" rx="8" fill="#0F3057" stroke="#74A9E6" stroke-width="1.5"/>
+      <circle cx="253" cy="150" r="3.2" fill="#A8C9F0"/>
+      <circle cx="253" cy="192" r="3.2" fill="#A8C9F0"/>
+      <rect x="560" y="140" width="46" height="62" rx="8" fill="#0F3057" stroke="#74A9E6" stroke-width="1.5"/>
+      <circle cx="583" cy="150" r="3.2" fill="#A8C9F0"/>
+      <circle cx="583" cy="192" r="3.2" fill="#F2921B"/>
+    </g>
+
+    <!-- 横向管道 2（更长，带异径） -->
+    <rect x="0" y="340" width="900" height="48" rx="24" fill="#154175" stroke="#3C86DC" stroke-width="1.5"/>
+    <g>
+      <rect x="160" y="328" width="50" height="72" rx="9" fill="#0F3057" stroke="#74A9E6" stroke-width="1.5"/>
+      <circle cx="185" cy="340" r="3.4" fill="#A8C9F0"/>
+      <circle cx="185" cy="388" r="3.4" fill="#A8C9F0"/>
+      <rect x="470" y="328" width="50" height="72" rx="9" fill="#0F3057" stroke="#74A9E6" stroke-width="1.5"/>
+      <circle cx="495" cy="340" r="3.4" fill="#A8C9F0"/>
+      <circle cx="495" cy="388" r="3.4" fill="#A8C9F0"/>
+      <rect x="740" y="328" width="50" height="72" rx="9" fill="#0F3057" stroke="#74A9E6" stroke-width="1.5"/>
+      <circle cx="765" cy="340" r="3.4" fill="#F2921B"/>
+      <circle cx="765" cy="388" r="3.4" fill="#A8C9F0"/>
+    </g>
+
+    <!-- 横向管道 3 -->
+    <rect x="90" y="560" width="760" height="40" rx="20" fill="#154175" stroke="#3C86DC" stroke-width="1.5"/>
+    <g>
+      <rect x="260" y="551" width="44" height="58" rx="8" fill="#0F3057" stroke="#74A9E6" stroke-width="1.5"/>
+      <circle cx="282" cy="561" r="3" fill="#A8C9F0"/>
+      <circle cx="282" cy="600" r="3" fill="#A8C9F0"/>
+      <rect x="590" y="551" width="44" height="58" rx="8" fill="#0F3057" stroke="#74A9E6" stroke-width="1.5"/>
+      <circle cx="612" cy="561" r="3" fill="#A8C9F0"/>
+      <circle cx="612" cy="600" r="3" fill="#A8C9F0"/>
+    </g>
+
+    <!-- 竖向立管 + 蝶阀（信号蝶阀示意） -->
+    <rect x="700" y="60" width="40" height="700" rx="20" fill="#154175" stroke="#3C86DC" stroke-width="1.5"/>
+    <circle cx="720" cy="470" r="46" fill="#0F3057" stroke="#74A9E6" stroke-width="2"/>
+    <circle cx="720" cy="470" r="46" fill="none" stroke="#3C86DC" stroke-width="1" stroke-dasharray="3 4" opacity="0.6"/>
+    <rect x="706" y="402" width="28" height="26" rx="4" fill="#F2921B" opacity="0.9"/>
+    <rect x="686" y="452" width="68" height="36" rx="6" fill="#0A1F38" stroke="#74A9E6" stroke-width="1.5"/>
+
+    <!-- 喷淋头示意 -->
+    <g transform="translate(120,470)">
+      <rect x="-4" y="-58" width="8" height="30" rx="2" fill="#F39E34"/>
+      <circle cx="0" cy="0" r="17" fill="#0F3057" stroke="#F39E34" stroke-width="2"/>
+      <path d="M-22 30 L-30 44 M22 30 L30 44 M0 34 V50" stroke="#74A9E6" stroke-width="2" stroke-linecap="round"/>
+    </g>
+  </g>
+
+  <!-- 左侧留白做渐隐处理，保证文字可读性（单一纯色叠加，不是装饰性渐变色块） -->
+  <rect x="0" y="0" width="900" height="820" fill="#0A1F38" opacity="0.35"/>
+</svg>

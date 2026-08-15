@@ -3,6 +3,7 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 export type ProductCardItem = {
   id: string;
   imageUrl: string | null;
+  isFeatured: boolean;
   modelNumber: string;
   name: string;
   summary: string;
@@ -31,6 +32,7 @@ type ProductRow = {
   name: string;
   summary: string | null;
   description?: string | null;
+  is_featured?: boolean | null;
   product_images?: Array<{ image_url: string; is_primary?: boolean | null }>;
   subcategories?: {
     name: string;
@@ -49,6 +51,7 @@ function mapProduct(product: ProductRow): ProductDetail {
     id: String(product.id),
     imageUrl: images[0] ?? null,
     images,
+    isFeatured: Boolean(product.is_featured),
     modelNumber: product.model_number,
     name: product.name,
     summary: product.summary ?? ""
@@ -56,7 +59,7 @@ function mapProduct(product: ProductRow): ProductDetail {
 }
 
 const PRODUCT_SELECT =
-  "id,model_number,name,summary,description,product_images(image_url,is_primary),subcategories(name,categories(name))";
+  "id,model_number,name,summary,description,is_featured,product_images(image_url,is_primary),subcategories(name,categories(name))";
 
 export async function getPublishedProducts(): Promise<ProductCardItem[]> {
   const supabase = createSupabaseServerClient();
@@ -138,16 +141,46 @@ export async function getProductsBySubcategoryId(
   return data.map((row) => mapProduct(row as unknown as ProductRow));
 }
 
+/**
+ * 首页"主推产品"：只取 is_featured = true 的已上架产品（跟 demo 静态站
+ * DataService.getFeaturedProducts 的口径一致），不是简单地取最新 6 个。
+ * 如果当前一个都没有被标记为重点推荐，就回退到最新的已上架产品，避免首页
+ * 因为运营还没勾选"重点推荐"就直接空掉。
+ */
 export async function getFeaturedProducts(): Promise<ProductCardItem[]> {
-  const products = await getPublishedProducts();
+  const supabase = createSupabaseServerClient();
 
-  return products.slice(0, 6);
+  if (!supabase) {
+    return [];
+  }
+
+  const { data, error } = await supabase
+    .from("products")
+    .select(PRODUCT_SELECT)
+    .eq("status", "published")
+    .eq("is_featured", true)
+    .order("created_at", { ascending: false })
+    .limit(6);
+
+  if (error) {
+    console.error("Failed to load featured products", error);
+    return (await getPublishedProducts()).slice(0, 6);
+  }
+
+  if (!data.length) {
+    return (await getPublishedProducts()).slice(0, 6);
+  }
+
+  return data.map((row) => mapProduct(row as unknown as ProductRow));
 }
+
+export type ProductsSort = "newest" | "nameAsc" | "modelAsc";
 
 export type ProductsPageQuery = {
   page?: number;
   pageSize?: number;
   q?: string;
+  sort?: ProductsSort;
   subcategoryId?: string;
 };
 
@@ -197,9 +230,15 @@ export async function getPublishedProductsPage(
   const from = (page - 1) * pageSize;
   const to = from + pageSize - 1;
 
-  const { count, data, error } = await request
-    .order("created_at", { ascending: false })
-    .range(from, to);
+  if (query.sort === "nameAsc") {
+    request = request.order("name", { ascending: true });
+  } else if (query.sort === "modelAsc") {
+    request = request.order("model_number", { ascending: true });
+  } else {
+    request = request.order("created_at", { ascending: false });
+  }
+
+  const { count, data, error } = await request.range(from, to);
 
   if (error || !data) {
     console.error("Failed to load products page", error);

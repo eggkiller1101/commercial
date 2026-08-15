@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { Breadcrumb } from "@/components/layout/breadcrumb";
 import { PageHero } from "@/components/layout/page-hero";
 import { ProductGrid } from "@/components/products/product-grid";
 import { getCategoryPageBySlug } from "@/features/categories/data";
@@ -30,6 +31,14 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 
     return (
       <div>
+        <Breadcrumb
+          items={[
+            { href: "/products", label: t(locale, "nav.products") },
+            { href: `/categories/${category.slug}`, label: category.name }
+          ]}
+          locale={locale}
+        />
+
         <PageHero
           description={category.description || undefined}
           eyebrow={t(locale, "products.filterCategory")}
@@ -65,6 +74,17 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 
   return (
     <div>
+      <Breadcrumb
+        items={[
+          { href: "/products", label: t(locale, "nav.products") },
+          ...(parentCategory
+            ? [{ href: `/categories/${parentCategory.slug}`, label: parentCategory.name }]
+            : []),
+          { href: `/categories/${subcategory.slug}`, label: subcategory.name }
+        ]}
+        locale={locale}
+      />
+
       <PageHero
         description={subcategory.description || undefined}
         eyebrow={t(locale, "products.filterCategory")}

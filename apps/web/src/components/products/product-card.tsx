@@ -20,8 +20,13 @@ export function ProductCard({
 
   return (
     <div className="flex flex-col overflow-hidden rounded-lg border border-border bg-card transition-shadow hover:shadow-md">
-      <Link className="block" href={`/products/${product.id}`}>
+      <Link className="relative block" href={`/products/${product.id}`}>
         <div className="flex aspect-[4/3] items-center justify-center bg-neutral-100">
+          {product.isFeatured ? (
+            <span className="absolute left-2.5 top-2.5 z-10 rounded-full bg-secondary-50 px-2.5 py-1 text-[11px] font-semibold text-secondary-700">
+              {t(locale, "products.featuredBadge")}
+            </span>
+          ) : null}
           <Image
             alt={product.name}
             className="h-3/5 w-3/5 object-contain"

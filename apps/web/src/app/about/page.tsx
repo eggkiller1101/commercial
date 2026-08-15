@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { Breadcrumb } from "@/components/layout/breadcrumb";
 import { t } from "@/lib/i18n/dictionary";
 import { getLocale } from "@/lib/i18n/get-locale";
 
@@ -17,6 +18,8 @@ export default async function AboutPage() {
 
   return (
     <div>
+      <Breadcrumb items={[{ href: "/about", label: t(locale, "nav.about") }]} locale={locale} />
+
       <div className="bg-primary-900 text-neutral-0">
         <div className="mx-auto max-w-site px-4 py-10">
           <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-white/20 px-3 py-1 text-xs font-semibold text-secondary-300">
@@ -72,20 +75,22 @@ export default async function AboutPage() {
               {t(locale, "about.timelineSub")}
             </p>
           </div>
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="relative space-y-8 border-l-2 border-border pl-8">
             {TIMELINE.map((item) => (
-              <div className="rounded-lg border border-border bg-card p-5" key={item.year}>
+              <div className="relative" key={item.year}>
+                <span className="absolute -left-[41px] top-1 h-3 w-3 rounded-full border-2 border-primary-500 bg-card" />
                 <div className="text-lg font-bold text-primary-600">{item.year}</div>
-                <p className="mt-2 text-[13px] leading-6 text-muted-foreground">
+                <p className="mt-1.5 max-w-2xl text-[13.5px] leading-6 text-muted-foreground">
                   {t(locale, `about.${item.key}` as const)}
                 </p>
               </div>
             ))}
-            <div className="rounded-lg border border-border bg-card p-5">
+            <div className="relative">
+              <span className="absolute -left-[41px] top-1 h-3 w-3 rounded-full border-2 border-secondary-500 bg-card" />
               <div className="text-lg font-bold text-primary-600">
                 {locale === "en" ? "Today" : "现在"}
               </div>
-              <p className="mt-2 text-[13px] leading-6 text-muted-foreground">
+              <p className="mt-1.5 max-w-2xl text-[13.5px] leading-6 text-muted-foreground">
                 {t(locale, "about.timelineNow")}
               </p>
             </div>
@@ -102,7 +107,7 @@ export default async function AboutPage() {
           <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 lg:grid-cols-6">
             {CERTS.map((cert) => (
               <div
-                className="flex h-16 items-center justify-center rounded-md border border-border bg-card text-sm font-semibold text-muted-foreground"
+                className="flex h-16 items-center justify-center rounded-md bg-primary-50 text-sm font-bold text-primary-700"
                 key={cert}
               >
                 {cert}

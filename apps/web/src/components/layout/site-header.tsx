@@ -11,8 +11,9 @@ import { SITE_CONFIG } from "@/lib/site-config";
 export async function SiteHeader() {
   const [categoryTree, locale] = await Promise.all([getCategoryTree(), getLocale()]);
 
-  const staticNavItems = [
-    { href: "/", label: t(locale, "nav.home") },
+  const homeNavItem = { href: "/", label: t(locale, "nav.home") };
+
+  const trailingNavItems = [
     { href: "/documents", label: t(locale, "nav.documents") },
     { href: "/about", label: t(locale, "nav.about") },
     { href: "/contact", label: t(locale, "nav.contact") }
@@ -54,6 +55,15 @@ export async function SiteHeader() {
       <nav className="border-t border-border bg-neutral-50">
         <div className="mx-auto flex max-w-site justify-center px-4">
           <ul className="flex flex-nowrap gap-1">
+            <li>
+              <Link
+                className="flex h-12 items-center border-b-2 border-transparent px-4 text-[14.5px] font-medium text-foreground transition-colors hover:border-primary-500 hover:bg-card hover:text-primary-600"
+                href={homeNavItem.href}
+              >
+                {homeNavItem.label}
+              </Link>
+            </li>
+
             <li className="group relative">
               <Link
                 className="flex h-12 items-center gap-1 border-b-2 border-transparent px-4 text-[14.5px] font-medium text-foreground transition-colors group-hover:border-primary-500 group-hover:bg-card group-hover:text-primary-600"
@@ -90,7 +100,7 @@ export async function SiteHeader() {
               ) : null}
             </li>
 
-            {staticNavItems.map((item) => (
+            {trailingNavItems.map((item) => (
               <li key={item.href}>
                 <Link
                   className="flex h-12 items-center border-b-2 border-transparent px-4 text-[14.5px] font-medium text-foreground transition-colors hover:border-primary-500 hover:bg-card hover:text-primary-600"
