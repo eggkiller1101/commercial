@@ -24,6 +24,7 @@ export function DocumentForm({
   const [errors, setErrors] = useState<DocumentFormErrors>({});
   const [selectedFileName, setSelectedFileName] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   function clearError(field: keyof DocumentFormErrors) {
     setSuccessMessage("");
@@ -44,11 +45,20 @@ export function DocumentForm({
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
+    if (mode === "edit") {
+      setErrors({
+        form: "文件编辑保存接口尚未配置，暂时只从数据库读取文件信息。"
+      });
+      setSuccessMessage("");
+      return;
+    }
+
     const formData = new FormData(event.currentTarget);
     const nextErrors: DocumentFormErrors = {};
     const title = String(formData.get("title") ?? "").trim();
     const fileType = String(formData.get("fileType") ?? "").trim();
     const language = String(formData.get("language") ?? "").trim();
+    const version = String(formData.get("version") ?? "").trim();
     const fileInput = event.currentTarget.elements.namedItem("file");
     const file =
       fileInput instanceof HTMLInputElement ? fileInput.files?.[0] : null;
@@ -56,38 +66,73 @@ export function DocumentForm({
     if (!title) {
       nextErrors.title = "请输入文件标题";
     }
-
-    if (mode === "create" && !file) {
+    if (!file) {
       nextErrors.file = "请上传文件";
     }
-
     if (!fileType) {
       nextErrors.fileType = "请输入文件类型";
     }
-
     if (!language) {
       nextErrors.language = "请输入语言";
     }
 
     setErrors(nextErrors);
 
-    if (Object.keys(nextErrors).length > 0) {
+    if (Object.keys(nextErrors).length > 0 || !file) {
       setSuccessMessage("");
       return;
     }
 
-    if (mode === "create") {
-      setErrors({
-        form: "文件存储尚未配置，暂时无法保存文件。后续接入 R2 / Supabase Storage 后会在这里上传并生成真实文件地址。"
-      });
-      setSuccessMessage("");
-      return;
-    }
-
-    setErrors({
-      form: "文件编辑保存接口尚未配置，暂时只从数据库读取文件信息。"
-    });
+    setIsSubmitting(true);
     setSuccessMessage("");
+
+    try {
+      const uploadForm = new FormData();
+      uploadForm.set("file", file);
+      uploadForm.set("kind", "documents");
+
+      const uploadResponse = await fetch("/api/upload", {
+        body: uploadForm,
+        method: "POST"
+      });
+      const uploadResult = (await uploadResponse.json()) as {
+        message?: string;
+        ok?: boolean;
+        url?: string;
+      };
+
+      if (!uploadResponse.ok || !uploadResult.ok || !uploadResult.url) {
+        setErrors({ form: uploadResult.message ?? "文件上传失败，请稍后重试" });
+        return;
+      }
+
+      const response = await fetch("/api/documents", {
+        body: JSON.stringify({
+          fileType,
+          fileUrl: uploadResult.url,
+          language,
+          title,
+          version
+        }),
+        headers: { "Content-Type": "application/json" },
+        method: "POST"
+      });
+      const result = (await response.json()) as {
+        message?: string;
+        ok?: boolean;
+      };
+
+      if (!response.ok || !result.ok) {
+        setErrors({ form: result.message ?? "文件保存失败，请稍后重试" });
+        return;
+      }
+
+      setSuccessMessage("文件已保存");
+    } catch {
+      setErrors({ form: "文件保存失败，请稍后重试" });
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (
@@ -100,6 +145,7 @@ export function DocumentForm({
           <span className="text-sm font-medium">文件标题</span>
           <Input
             defaultValue={defaultValues?.title}
+            disabled={isSubmitting}
             name="title"
             onChange={() => clearError("title")}
             placeholder="请输入文件标题"
@@ -115,7 +161,9 @@ export function DocumentForm({
             <div className="flex min-h-32 flex-col items-center justify-center rounded-md border border-dashed bg-background px-4 py-6 text-center">
               <FileUp className="mb-3 h-8 w-8 text-muted-foreground" />
               <Input
+                accept="image/jpeg,image/png,image/webp,application/pdf"
                 className="max-w-sm cursor-pointer"
+                disabled={isSubmitting}
                 name="file"
                 onChange={handleFileChange}
                 type="file"
@@ -126,7 +174,7 @@ export function DocumentForm({
                 </p>
               ) : (
                 <p className="mt-3 text-xs text-muted-foreground">
-                  当前仅保留上传入口，文件存储接入后会生成真实文件地址。
+                  支持 jpeg / png / webp / pdf，最大 20MB。
                 </p>
               )}
               {errors.file ? (
@@ -140,6 +188,7 @@ export function DocumentForm({
           <span className="text-sm font-medium">文件类型</span>
           <Input
             defaultValue={defaultValues?.fileType}
+            disabled={isSubmitting}
             name="fileType"
             onChange={() => clearError("fileType")}
             placeholder="例如 pdf、csv、docx"
@@ -153,6 +202,7 @@ export function DocumentForm({
           <span className="text-sm font-medium">语言</span>
           <Input
             defaultValue={defaultValues?.language ?? "zh-CN"}
+            disabled={isSubmitting}
             name="language"
             onChange={() => clearError("language")}
             placeholder="zh-CN"
@@ -166,8 +216,8 @@ export function DocumentForm({
           <span className="text-sm font-medium">版本</span>
           <Input
             defaultValue={defaultValues?.version}
+            disabled={isSubmitting}
             name="version"
-            onChange={() => clearError("version")}
             placeholder="请输入版本，可选"
           />
         </label>
@@ -178,9 +228,9 @@ export function DocumentForm({
       ) : null}
 
       <div className="flex justify-end">
-        <Button type="submit">
+        <Button disabled={isSubmitting} type="submit">
           <Save className="mr-2 h-4 w-4" />
-          保存文件
+          {isSubmitting ? "保存中" : "保存文件"}
         </Button>
       </div>
 
