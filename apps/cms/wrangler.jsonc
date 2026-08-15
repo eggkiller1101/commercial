@@ -10,5 +10,18 @@
   },
   "observability": {
     "enabled": true
+  },
+  // R2 桶还没建，先声明绑定，部署前请先按 docs/R2_UPLOAD_SETUP.md 里的步骤
+  // 用 wrangler CLI 创建同名桶并开启公开访问，否则 deploy 会报"桶不存在"。
+  "r2_buckets": [
+    {
+      "binding": "PRODUCT_ASSETS",
+      "bucket_name": "commercial-product-assets"
+    }
+  ],
+  "vars": {
+    // 桶开启公开访问(r2.dev)后，把 Cloudflare 给的 pub-xxxx.r2.dev 地址填在这里，
+    // 上传接口会用它拼出可公开访问的图片/文件 URL。部署前必须填，否则上传接口会报错。
+    "R2_PUBLIC_BASE_URL": ""
   }
 }
