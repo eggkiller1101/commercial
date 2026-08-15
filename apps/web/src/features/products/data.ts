@@ -14,19 +14,37 @@ export type ProductDetail = ProductCardItem & {
   images: string[];
 };
 
-function mapProduct(product: {
+// ----------------------------------------------------------------------------
+// ⚠️ products 表在真实 Supabase 库里没有 category_id 这一列（这正是静态原型
+// 站早期"产品页空白"的根因）。真实外键是 products.subcategory_id ->
+// subcategories.id，分类名要通过 subcategories 再关联一层 categories 才能拿到。
+// PostgREST 支持这种"两层内嵌资源"写法：subcategories(name, categories(name))，
+// 前提是 subcategories 表本身对 subcategories.category_id -> categories.id
+// 这条外键关系已经建好（当前建库脚本 schema.sql 还没补上 subcategories 的建表
+// 语句，具体外键名以真实数据库为准；如果这里报"找不到关系"的错，去 Supabase
+// 后台确认外键约束名，必要时改成 subcategories!<fk名>(...) 的显式写法）。
+// ----------------------------------------------------------------------------
+
+type ProductRow = {
   id: number;
   model_number: string;
   name: string;
   summary: string | null;
   description?: string | null;
-  categories?: { name: string } | null;
   product_images?: Array<{ image_url: string; is_primary?: boolean | null }>;
-}): ProductDetail {
+  subcategories?: {
+    name: string;
+    categories?: { name: string } | null;
+  } | null;
+};
+
+function mapProduct(product: ProductRow): ProductDetail {
   const images = product.product_images?.map((image) => image.image_url) ?? [];
+  const categoryName =
+    product.subcategories?.categories?.name ?? product.subcategories?.name ?? "";
 
   return {
-    categoryName: product.categories?.name ?? "",
+    categoryName,
     description: product.description ?? "",
     id: String(product.id),
     imageUrl: images[0] ?? null,
@@ -37,6 +55,9 @@ function mapProduct(product: {
   };
 }
 
+const PRODUCT_SELECT =
+  "id,model_number,name,summary,description,product_images(image_url,is_primary),subcategories(name,categories(name))";
+
 export async function getPublishedProducts(): Promise<ProductCardItem[]> {
   const supabase = createSupabaseServerClient();
 
@@ -46,16 +67,16 @@ export async function getPublishedProducts(): Promise<ProductCardItem[]> {
 
   const { data, error } = await supabase
     .from("products")
-    .select("id,model_number,name,summary,product_images(image_url,is_primary)")
+    .select(PRODUCT_SELECT)
     .eq("status", "published")
-    .order("published_at", { ascending: false });
+    .order("created_at", { ascending: false });
 
   if (error || !data) {
     console.error("Failed to load published products", error);
     return [];
   }
 
-  return data.map(mapProduct);
+  return data.map((row) => mapProduct(row as unknown as ProductRow));
 }
 
 export async function getPublishedProductById(
@@ -75,9 +96,7 @@ export async function getPublishedProductById(
 
   const { data, error } = await supabase
     .from("products")
-    .select(
-      "id,model_number,name,summary,description,categories(name),product_images(image_url,is_primary)"
-    )
+    .select(PRODUCT_SELECT)
     .eq("id", numericId)
     .eq("status", "published")
     .maybeSingle();
@@ -90,11 +109,107 @@ export async function getPublishedProductById(
     return null;
   }
 
-  return mapProduct(data);
+  return mapProduct(data as unknown as ProductRow);
+}
+
+export async function getProductsBySubcategoryId(
+  subcategoryId: string
+): Promise<ProductCardItem[]> {
+  const supabase = createSupabaseServerClient();
+
+  const numericSubcategoryId = Number(subcategoryId);
+
+  if (!supabase || !Number.isFinite(numericSubcategoryId)) {
+    return [];
+  }
+
+  const { data, error } = await supabase
+    .from("products")
+    .select(PRODUCT_SELECT)
+    .eq("subcategory_id", numericSubcategoryId)
+    .eq("status", "published")
+    .order("created_at", { ascending: false });
+
+  if (error || !data) {
+    console.error("Failed to load products by subcategory", error);
+    return [];
+  }
+
+  return data.map((row) => mapProduct(row as unknown as ProductRow));
 }
 
 export async function getFeaturedProducts(): Promise<ProductCardItem[]> {
   const products = await getPublishedProducts();
 
   return products.slice(0, 6);
+}
+
+export type ProductsPageQuery = {
+  page?: number;
+  pageSize?: number;
+  q?: string;
+  subcategoryId?: string;
+};
+
+export type ProductsPageResult = {
+  page: number;
+  pageSize: number;
+  products: ProductCardItem[];
+  total: number;
+};
+
+/** ilike 用的通配符/特殊符号先转义掉，避免用户输入影响 PostgREST 过滤语法本身。 */
+function escapeForIlike(value: string): string {
+  return value.replace(/[%_,()]/g, "");
+}
+
+export async function getPublishedProductsPage(
+  query: ProductsPageQuery
+): Promise<ProductsPageResult> {
+  const supabase = createSupabaseServerClient();
+  const page = Math.max(1, query.page ?? 1);
+  const pageSize = query.pageSize ?? 12;
+
+  if (!supabase) {
+    return { page, pageSize, products: [], total: 0 };
+  }
+
+  let request = supabase
+    .from("products")
+    .select(PRODUCT_SELECT, { count: "exact" })
+    .eq("status", "published");
+
+  const numericSubcategoryId = Number(query.subcategoryId);
+
+  if (query.subcategoryId && Number.isFinite(numericSubcategoryId)) {
+    request = request.eq("subcategory_id", numericSubcategoryId);
+  }
+
+  const keyword = query.q?.trim();
+
+  if (keyword) {
+    const safeKeyword = escapeForIlike(keyword);
+    request = request.or(
+      `name.ilike.%${safeKeyword}%,model_number.ilike.%${safeKeyword}%`
+    );
+  }
+
+  const from = (page - 1) * pageSize;
+  const to = from + pageSize - 1;
+
+  const { count, data, error } = await request
+    .order("created_at", { ascending: false })
+    .range(from, to);
+
+  if (error || !data) {
+    console.error("Failed to load products page", error);
+    return { page, pageSize, products: [], total: 0 };
+  }
+
+  return {
+    page,
+    pageSize,
+    products: data.map((row) => mapProduct(row as unknown as ProductRow)),
+    total: count ?? data.length
+  };
 }

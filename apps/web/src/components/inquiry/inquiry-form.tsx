@@ -19,29 +19,27 @@ export function InquiryForm() {
   );
 
   return (
-    <form action={formAction} className="space-y-5 rounded-md border bg-card p-6">
+    <form
+      action={formAction}
+      className="space-y-5 rounded-lg border border-border bg-card p-6"
+    >
       <div className="grid gap-4 sm:grid-cols-2">
-        <Input name="name" placeholder="客户名" />
-        <Input name="company" placeholder="客户公司" />
-        <Input name="phone" placeholder="客户电话" />
-        <Input name="email" placeholder="邮箱" type="email" />
+        <Input name="name" placeholder="姓名 *" required />
+        <Input name="company" placeholder="公司名称" />
+        <Input name="phone" placeholder="联系电话 *" required />
+        <Input name="email" placeholder="邮箱 *" required type="email" />
       </div>
-      <Input name="productId" placeholder="产品 id，可选" />
-      <Textarea name="message" placeholder="具体信息" />
-      <Input accept=".csv" name="quoteFile" type="file" />
-      <p className="text-xs text-muted-foreground">
-        文件上传存储尚未接入，当前表单先预留上传入口。
-      </p>
+      <Textarea name="message" placeholder="具体需求（项目背景、产品类型、工期要求等）" required />
       {state.message ? (
         <p
           className={
-            state.ok ? "text-sm text-primary" : "text-sm text-destructive"
+            state.ok ? "text-sm text-primary-600" : "text-sm text-destructive"
           }
         >
           {state.message}
         </p>
       ) : null}
-      <Button disabled={isPending} type="submit">
+      <Button className="w-full" disabled={isPending} type="submit">
         {isPending ? "提交中" : "提交询价"}
       </Button>
     </form>

@@ -5,6 +5,14 @@
 --       + 询价线索 / 后台用户 / 站点设置 (通用辅助模块)
 -- 命名规范: 表名小写复数 snake_case;主键统一为 id BIGSERIAL;
 --           所有表均有 created_at,可变更内容的表额外有 updated_at(触发器自动维护)
+--
+-- ⚠️ 2026-08 说明:这份脚本里的分类模型是"两级"(categories 自引用 parent_id,
+-- products 直接挂 category_id)。实际生产 Supabase 库后来多加了一张独立的
+-- subcategories 表,变成"三级":categories(大类) -> subcategories(子类,
+-- 带 category_id 外键指回大类) -> products(挂 subcategory_id,不再是
+-- category_id)。这份文件暂时没有回填 subcategories 的建表语句,
+-- 前端 js/data-service.js 已经按三级结构改过,以真实数据库为准,
+-- 这份 schema.sql 仅供参考两级设计的原始意图。
 -- ============================================================================
 
 
@@ -376,6 +384,29 @@ CREATE TRIGGER trg_inquiries_updated_at
     FOR EACH ROW EXECUTE FUNCTION set_updated_at();
 
 COMMENT ON TABLE inquiries IS '询价/联系表单产生的销售线索,即使前端暂未规划此功能也建议预留,几乎所有B2B站点最终都需要';
+
+-- ⚠️ 2026-08 新增: apps/web 的"询价清单"功能允许用户一次性把多个产品打包
+-- 提交询价(对应前端 CartItem[])。inquiries 表是"一条线索"的公共信息(联系人/
+-- 状态),inquiry_items 是"这条线索里具体询问了哪些产品",一对多。
+-- product_id 用 ON DELETE SET NULL 而不是级联删除:产品下架/删除后,历史询价
+-- 记录仍要保留(只是关联的产品链接失效),不能让历史销售线索连带消失。
+CREATE TABLE inquiry_items (
+    id            BIGSERIAL PRIMARY KEY,
+    inquiry_id    BIGINT NOT NULL REFERENCES inquiries(id) ON DELETE CASCADE,
+    product_id    BIGINT REFERENCES products(id) ON DELETE SET NULL,
+    -- 产品名称/型号做一份快照,即使后面 products 那一行被删除或改名,
+    -- 历史询价记录里显示的还是用户提交时看到的名称,不会变成空白
+    product_name  VARCHAR(300),
+    model_number  VARCHAR(100),
+    quantity      INTEGER NOT NULL DEFAULT 1,
+    note          VARCHAR(500),
+    created_at    TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX idx_inquiry_items_inquiry_id ON inquiry_items(inquiry_id);
+CREATE INDEX idx_inquiry_items_product_id ON inquiry_items(product_id);
+
+COMMENT ON TABLE inquiry_items IS '询价清单明细:一条 inquiry 对应多条 inquiry_items,支持多产品一次性询价';
 
 
 -- ============================================================================

@@ -229,6 +229,20 @@ CREATE POLICY public_insert_inquiries
     );
 
 
+-- ----------------------------------------------------------------------------
+-- inquiry_items —— 2026-08 新增,配合 apps/web 的多产品"询价清单"功能。
+-- 跟 inquiries 一个逻辑:只允许 INSERT,不给 anon 任何 SELECT/UPDATE/DELETE
+-- 权限,避免匿名用户读到别人的询价明细。CMS 后台走 service_role,不受此限制。
+-- ----------------------------------------------------------------------------
+ALTER TABLE inquiry_items ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS public_insert_inquiry_items ON inquiry_items;
+CREATE POLICY public_insert_inquiry_items
+    ON inquiry_items FOR INSERT
+    TO anon, authenticated
+    WITH CHECK (TRUE);
+
+
 -- ============================================================================
 -- 浏览量/下载量 +1 的 RPC 函数
 -- ============================================================================
@@ -279,6 +293,31 @@ END;
 $$;
 
 GRANT EXECUTE ON FUNCTION public.increment_document_download_count(BIGINT) TO anon, authenticated;
+
+
+-- ============================================================================
+-- 2026-08 补充:subcategories 表 (真实生产库比这份脚本原来设计的"两级分类"
+-- 多出来的一张表:categories(大类) -> subcategories(子类) -> products)
+-- ----------------------------------------------------------------------------
+-- 如果这张表是后来手动在 Supabase 里建的,很可能漏了给 anon 开只读权限——
+-- 现象就是:products 本身能查到,但每个产品挂在哪个子类/大类下这段信息
+-- 查不到(前端会显示分类名为空),或者如果连带 RLS 没 enable 也没报错,
+-- 只是 anon 查出来 0 行。请在 Supabase SQL Editor 里跑一遍这一段
+-- (跟 categories 表的策略保持同一个口径:只读、按 is_active 过滤):
+--
+--   ALTER TABLE subcategories ENABLE ROW LEVEL SECURITY;
+--
+--   DROP POLICY IF EXISTS public_read_subcategories ON subcategories;
+--   CREATE POLICY public_read_subcategories
+--       ON subcategories FOR SELECT
+--       TO anon, authenticated
+--       USING (is_active = TRUE);
+--
+-- 跑完之后可以用下面这句确认 anon 真的能读到数据(应该 > 0):
+--   set role anon;
+--   select count(*) from subcategories;
+--   reset role;
+-- ============================================================================
 
 
 -- ============================================================================

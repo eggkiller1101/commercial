@@ -29,6 +29,26 @@ export type Database = {
         Update: Partial<Database["public"]["Tables"]["categories"]["Row"]>;
         Relationships: [];
       };
+      subcategories: {
+        Row: {
+          banner_image_url: string | null;
+          category_id: number;
+          created_at: string;
+          description: string | null;
+          icon_url: string | null;
+          id: number;
+          is_active: boolean;
+          name: string;
+          seo_description: string | null;
+          seo_title: string | null;
+          slug: string;
+          sort_order: number;
+          updated_at: string;
+        };
+        Insert: Partial<Database["public"]["Tables"]["subcategories"]["Row"]>;
+        Update: Partial<Database["public"]["Tables"]["subcategories"]["Row"]>;
+        Relationships: [];
+      };
       documents: {
         Row: {
           category_id: number | null;
@@ -65,6 +85,21 @@ export type Database = {
         Update: Partial<Database["public"]["Tables"]["inquiries"]["Row"]>;
         Relationships: [];
       };
+      inquiry_items: {
+        Row: {
+          created_at: string;
+          id: number;
+          inquiry_id: number;
+          model_number: string | null;
+          note: string | null;
+          product_id: number | null;
+          product_name: string | null;
+          quantity: number;
+        };
+        Insert: Partial<Database["public"]["Tables"]["inquiry_items"]["Row"]>;
+        Update: Partial<Database["public"]["Tables"]["inquiry_items"]["Row"]>;
+        Relationships: [];
+      };
       product_images: {
         Row: {
           alt_text: string | null;
@@ -82,7 +117,6 @@ export type Database = {
       products: {
         Row: {
           application_notes: string | null;
-          category_id: number | null;
           created_at: string;
           created_by: number | null;
           description: string | null;
@@ -97,6 +131,7 @@ export type Database = {
           seo_title: string | null;
           slug: string;
           status: "draft" | "published" | "archived";
+          subcategory_id: number | null;
           summary: string | null;
           updated_at: string;
           view_count: number;
