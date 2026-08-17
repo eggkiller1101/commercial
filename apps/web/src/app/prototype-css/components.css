@@ -101,7 +101,7 @@
 /* -------------------- Hero -------------------- */
 .hero {
   position: relative;
-  background: #0a1f38 url("../assets/hero-bg.svg") center center / cover no-repeat;
+  background: #0a1f38 url("/assets/hero-bg.svg") center center / cover no-repeat;
   color: var(--neutral-0);
   overflow: hidden;
 }

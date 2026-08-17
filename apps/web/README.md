@@ -7,7 +7,7 @@
 - 默认只读 Supabase 数据。
 - 只有询价表单提交和询价单上传需要写数据。
 - 产品只展示 `status = published`。
-- CMS 下架后的 `status = archived` 产品，web 不展示。
+- CMS 下架后的 `status = unpublished` 产品，web 不展示。
 
 详细架构见：
 

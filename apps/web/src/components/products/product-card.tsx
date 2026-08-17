@@ -7,7 +7,7 @@ export function ProductCard({ product }: { product: ProductCardItem }) {
   return (
     <Link
       className="group block rounded-md border bg-card p-4 transition-colors hover:border-primary"
-      href={`/products/${product.id}`}
+      href={`/products/${product.slug || product.id}`}
     >
       <div className="flex aspect-[4/3] items-center justify-center rounded-md bg-muted text-sm text-muted-foreground">
         {product.imageUrl ? (
@@ -23,8 +23,11 @@ export function ProductCard({ product }: { product: ProductCardItem }) {
         )}
       </div>
       <div className="mt-4 space-y-1">
-        <p className="text-xs text-muted-foreground">{product.modelNumber}</p>
+        <p className="text-xs text-muted-foreground">
+          {product.categoryName || product.subcategoryName || "产品"}
+        </p>
         <h3 className="font-medium group-hover:text-primary">{product.name}</h3>
+        <p className="text-xs text-muted-foreground">{product.modelNumber}</p>
         <p className="line-clamp-2 text-sm text-muted-foreground">
           {product.summary || "暂无产品简介"}
         </p>
