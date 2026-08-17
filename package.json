@@ -3,7 +3,10 @@
   "private": true,
   "scripts": {
     "dev:cms": "node scripts/dev-cms.mjs",
+    "dev:web": "npm run dev --workspace @commercial/web",
     "build:cms": "npm run build --workspace @commercial/cms",
+    "build:web": "npm run build --workspace @commercial/web",
+    "lint:web": "npm run lint --workspace @commercial/web",
     "lint:cms": "npm run lint --workspace @commercial/cms"
   },
   "workspaces": [
