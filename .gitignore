@@ -22,8 +22,8 @@ jspm_packages/
 web_modules/
 
 # Build output
-.next
-.open-next
+**/.next/
+**/.open-next/
 out
 dist
 build

@@ -46,7 +46,10 @@ export default async function InquiryDetailPage({
               key={key}
             >
               <p className="text-sm font-medium">{label}</p>
-              <p className="mt-2 rounded-md border bg-background px-3 py-2 text-sm text-muted-foreground">
+              <p
+                className="mt-2 rounded-md border bg-background px-3 py-2 text-sm text-muted-foreground"
+                title={String(inquiry[key] ?? "")}
+              >
                 {inquiry[key]}
               </p>
             </div>
@@ -58,7 +61,10 @@ export default async function InquiryDetailPage({
           <div className="mt-2 flex items-center justify-between gap-3 rounded-md border bg-background px-3 py-3 text-sm">
             <div className="flex min-w-0 items-center gap-3">
               <FileSpreadsheet className="h-5 w-5 shrink-0 text-muted-foreground" />
-              <span className="truncate font-medium">
+              <span
+                className="truncate font-medium"
+                title={inquiry.quoteFile ?? "暂无上传的询价单"}
+              >
                 {inquiry.quoteFile ?? "暂无上传的询价单"}
               </span>
               {inquiry.quoteFile ? (

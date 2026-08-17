@@ -233,12 +233,18 @@ export function CaseForm({ defaultValues }: CaseFormProps) {
               当前仅保留上传入口，存储接入后会生成真实封面地址。
             </p>
             {selectedCoverName ? (
-              <p className="mt-2 text-xs text-muted-foreground">
+              <p
+                className="mt-2 text-xs text-muted-foreground"
+                title={selectedCoverName}
+              >
                 已选择：{selectedCoverName}
               </p>
             ) : null}
             {defaultValues?.coverImageUrl ? (
-              <p className="mt-2 max-w-full truncate text-xs text-muted-foreground">
+              <p
+                className="mt-2 max-w-full truncate text-xs text-muted-foreground"
+                title={defaultValues.coverImageUrl}
+              >
                 当前封面：{defaultValues.coverImageUrl}
               </p>
             ) : null}

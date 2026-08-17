@@ -68,7 +68,10 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
             {products.items.length ? (
               products.items.map((product) => (
                 <tr className="border-t" key={product.id}>
-                  <td className="h-12 truncate px-4 font-medium">
+                  <td
+                    className="h-12 truncate px-4 font-medium"
+                    title={product.name}
+                  >
                     {product.name}
                   </td>
                   <td className="h-12 px-4 text-muted-foreground">

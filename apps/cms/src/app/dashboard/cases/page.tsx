@@ -68,7 +68,10 @@ export default async function CasesPage({ searchParams }: CasesPageProps) {
             {cases.items.length ? (
               cases.items.map((caseItem) => (
                 <tr className="border-t" key={caseItem.id}>
-                  <td className="h-12 truncate px-4 font-medium">
+                  <td
+                    className="h-12 truncate px-4 font-medium"
+                    title={caseItem.title}
+                  >
                     {caseItem.title}
                   </td>
                   <td className="h-12 px-4 text-muted-foreground">

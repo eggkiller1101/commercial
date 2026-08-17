@@ -69,7 +69,10 @@ export function ProductStatusButton({
         {isSubmitting ? "下架中" : "下架"}
       </Button>
       {errorMessage ? (
-        <span className="max-w-28 truncate text-xs text-destructive">
+        <span
+          className="max-w-28 truncate text-xs text-destructive"
+          title={errorMessage}
+        >
           {errorMessage}
         </span>
       ) : null}

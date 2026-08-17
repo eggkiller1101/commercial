@@ -45,7 +45,10 @@ export default async function DocumentsPage({
             {documents.items.length ? (
               documents.items.map((document) => (
                 <tr className="border-t" key={document.id}>
-                  <td className="h-12 truncate px-4 font-medium">
+                  <td
+                    className="h-12 truncate px-4 font-medium"
+                    title={document.name}
+                  >
                     {document.name}
                   </td>
                   <td className="h-12 px-4 text-muted-foreground">
