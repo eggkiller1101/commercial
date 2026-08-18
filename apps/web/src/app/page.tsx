@@ -124,12 +124,9 @@ export default async function HomePage() {
               </div>
             </div>
             <div className="video-frame">
-              <div className="video-placeholder">
-                <div className="play-btn">▶</div>
-                <strong>公司介绍视频预留位</strong>
-                <p>等有实拍视频后，可替换为真实播放器</p>
-                <p className="hint">支持视频文件或 CDN 直链</p>
-              </div>
+              <video controls preload="metadata" src="/assets/index_video.mp4">
+                您的浏览器暂不支持视频播放。
+              </video>
             </div>
           </section>
 
