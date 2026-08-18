@@ -4,8 +4,8 @@ export default function DocumentNotFound() {
   return (
     <NotFoundState
       backHref="/dashboard/documents"
-      backText="返回文件分类"
-      title="未找到该文件"
+      backText="返回资料列表"
+      title="未找到该资料"
     />
   );
 }

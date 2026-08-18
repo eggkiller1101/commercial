@@ -63,7 +63,10 @@ export function CategoryForm({ defaultValues }: CategoryFormProps) {
     setSuccessMessage("");
 
     try {
-      const response = await fetch("/api/categories", {
+      const isEditing = Boolean(defaultValues?.categoryId);
+      const response = await fetch(
+        isEditing ? `/api/categories/${defaultValues?.categoryId}` : "/api/categories",
+        {
         body: JSON.stringify({
           categoryName,
           description,
@@ -72,8 +75,9 @@ export function CategoryForm({ defaultValues }: CategoryFormProps) {
         headers: {
           "Content-Type": "application/json"
         },
-        method: "POST"
-      });
+          method: isEditing ? "PATCH" : "POST"
+        }
+      );
       const result = (await response.json()) as {
         categoryId?: string;
         message?: string;
@@ -87,7 +91,11 @@ export function CategoryForm({ defaultValues }: CategoryFormProps) {
         return;
       }
 
-      setSuccessMessage(`分类已保存，数据库 id：${result.categoryId}`);
+      setSuccessMessage(
+        isEditing
+          ? "一级分类已保存"
+          : `一级分类已保存，数据库 id：${result.categoryId}`
+      );
     } catch {
       setErrors({
         form: "分类保存失败，请稍后重试"
@@ -157,7 +165,7 @@ export function CategoryForm({ defaultValues }: CategoryFormProps) {
       <div className="flex justify-end">
         <Button disabled={isSubmitting} type="submit">
           <Save className="mr-2 h-4 w-4" />
-          {isSubmitting ? "保存中" : "保存分类"}
+          {isSubmitting ? "保存中" : "保存一级分类"}
         </Button>
       </div>
 

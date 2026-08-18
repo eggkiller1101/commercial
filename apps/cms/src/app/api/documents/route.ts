@@ -4,6 +4,7 @@ import { requireApiPermission } from "@/features/auth/guards";
 import { createDocument } from "@/features/documents/data";
 
 type DocumentRequestBody = {
+  categoryId?: string;
   fileType?: string;
   fileUrl?: string;
   language?: string;
@@ -21,17 +22,19 @@ export async function POST(request: Request) {
   const body = (await request.json()) as DocumentRequestBody;
 
   if (
+    !body.categoryId?.trim() ||
     !body.title?.trim() ||
     !body.fileType?.trim() ||
     !body.language?.trim()
   ) {
     return NextResponse.json(
-      { message: "文件标题、文件类型、语言均为必填" },
+      { message: "资料分类、资料标题、资料类型、语言均为必填" },
       { status: 400 }
     );
   }
 
   const result = await createDocument({
+    categoryId: body.categoryId,
     fileType: body.fileType,
     fileUrl: body.fileUrl,
     language: body.language,

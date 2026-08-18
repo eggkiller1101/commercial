@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ChevronLeft, ChevronRight, Pencil } from "lucide-react";
+import { ChevronLeft, ChevronRight, Download, Pencil } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { getDocuments } from "@/features/documents/data";
@@ -26,9 +26,9 @@ export default async function DocumentsPage({
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-semibold">文件分类</h2>
+        <h2 className="text-xl font-semibold">资料列表</h2>
         <p className="mt-1 text-sm text-muted-foreground">
-          共 {documents.total} 条文件，每页显示 {documents.pageSize} 条。
+          共 {documents.total} 条资料，每页显示 {documents.pageSize} 条。
         </p>
       </div>
 
@@ -36,28 +36,62 @@ export default async function DocumentsPage({
         <table className="w-full table-fixed border-collapse text-sm">
           <thead className="bg-muted text-muted-foreground">
             <tr>
-              <th className="h-11 px-4 text-left font-medium">文件名</th>
+              <th className="h-11 px-4 text-left font-medium">资料名</th>
+              <th className="h-11 w-44 px-4 text-left font-medium">资料分类</th>
               <th className="h-11 w-56 px-4 text-left font-medium">上传时间</th>
-              <th className="h-11 w-32 px-4 text-left font-medium">编辑按钮</th>
+              <th className="h-11 w-52 px-4 text-left font-medium">操作</th>
             </tr>
           </thead>
           <tbody>
             {documents.items.length ? (
               documents.items.map((document) => (
                 <tr className="border-t" key={document.id}>
-                  <td className="h-12 truncate px-4 font-medium">
+                  <td
+                    className="h-12 truncate px-4 font-medium"
+                    title={document.name}
+                  >
                     {document.name}
+                  </td>
+                  <td
+                    className="h-12 truncate px-4 text-muted-foreground"
+                    title={document.categoryName}
+                  >
+                    {document.categoryName}
                   </td>
                   <td className="h-12 px-4 text-muted-foreground">
                     {document.uploadedAt}
                   </td>
                   <td className="h-12 px-4">
-                    <Button asChild size="sm" variant="ghost">
-                      <Link href={`/dashboard/documents/${document.id}/edit`}>
-                        <Pencil className="mr-2 h-4 w-4" />
-                        编辑
-                      </Link>
-                    </Button>
+                    <div className="flex items-center gap-2">
+                      <Button asChild size="sm" variant="ghost">
+                        <Link href={`/dashboard/documents/${document.id}/edit`}>
+                          <Pencil className="mr-2 h-4 w-4" />
+                          编辑
+                        </Link>
+                      </Button>
+                      <Button
+                        asChild={Boolean(document.fileUrl)}
+                        disabled={!document.fileUrl}
+                        size="sm"
+                        variant="ghost"
+                      >
+                        {document.fileUrl ? (
+                          <a
+                            href={document.fileUrl}
+                            rel="noopener"
+                            target="_blank"
+                          >
+                            <Download className="mr-2 h-4 w-4" />
+                            下载
+                          </a>
+                        ) : (
+                          <span>
+                            <Download className="mr-2 h-4 w-4" />
+                            下载
+                          </span>
+                        )}
+                      </Button>
+                    </div>
                   </td>
                 </tr>
               ))
@@ -65,9 +99,9 @@ export default async function DocumentsPage({
               <tr className="border-t">
                 <td
                   className="h-32 px-4 text-center text-sm text-muted-foreground"
-                  colSpan={3}
+                  colSpan={4}
                 >
-                  暂无文件数据
+                  暂无资料数据
                 </td>
               </tr>
             )}

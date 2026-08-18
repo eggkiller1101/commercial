@@ -1,7 +1,10 @@
 import { notFound } from "next/navigation";
 
 import { ProductForm } from "@/features/products/product-form";
-import { getProductById } from "@/features/products/data";
+import {
+  getProductById,
+  getProductFormOptions
+} from "@/features/products/data";
 
 type EditProductPageProps = {
   params: Promise<{
@@ -11,7 +14,10 @@ type EditProductPageProps = {
 
 export default async function EditProductPage({ params }: EditProductPageProps) {
   const { productId } = await params;
-  const product = await getProductById(productId);
+  const [product, options] = await Promise.all([
+    getProductById(productId),
+    getProductFormOptions()
+  ]);
 
   if (!product) {
     notFound();
@@ -26,7 +32,7 @@ export default async function EditProductPage({ params }: EditProductPageProps) 
         </p>
       </div>
 
-      <ProductForm defaultValues={product} />
+      <ProductForm defaultValues={product} options={options} />
     </div>
   );
 }

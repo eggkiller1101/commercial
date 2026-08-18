@@ -45,7 +45,10 @@ export default async function InquiriesPage({
             {inquiries.items.length ? (
               inquiries.items.map((inquiry) => (
                 <tr className="border-t" key={inquiry.id}>
-                  <td className="h-12 truncate px-4 font-medium">
+                  <td
+                    className="h-12 truncate px-4 font-medium"
+                    title={inquiry.customerId}
+                  >
                     {inquiry.customerId}
                   </td>
                   <td className="h-12 px-4 text-muted-foreground">

@@ -3,6 +3,7 @@ import { ChevronLeft, ChevronRight, Pencil } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { getProducts } from "@/features/products/data";
+import { ProductStatusButton } from "@/features/products/product-status-button";
 import { cn } from "@/lib/utils";
 
 const PAGE_SIZE = 20;
@@ -21,6 +22,30 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
     pageSize: PAGE_SIZE
   });
 
+  function getProductStatusLabel(status: string) {
+    if (status === "published") {
+      return "已上架";
+    }
+
+    if (status === "unpublished") {
+      return "已下架";
+    }
+
+    return "状态未知";
+  }
+
+  function getProductStatusClassName(status: string) {
+    if (status === "published") {
+      return "border-emerald-200 bg-emerald-50 text-emerald-700";
+    }
+
+    if (status === "unpublished") {
+      return "border-slate-200 bg-slate-50 text-slate-600";
+    }
+
+    return "border-amber-200 bg-amber-50 text-amber-700";
+  }
+
   return (
     <div className="space-y-6">
       <div>
@@ -36,26 +61,43 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
             <tr>
               <th className="h-11 px-4 text-left font-medium">产品名</th>
               <th className="h-11 w-56 px-4 text-left font-medium">上传时间</th>
-              <th className="h-11 w-32 px-4 text-left font-medium">编辑按钮</th>
+              <th className="h-11 w-72 px-4 text-left font-medium">操作</th>
             </tr>
           </thead>
           <tbody>
             {products.items.length ? (
               products.items.map((product) => (
                 <tr className="border-t" key={product.id}>
-                  <td className="h-12 truncate px-4 font-medium">
+                  <td
+                    className="h-12 truncate px-4 font-medium"
+                    title={product.name}
+                  >
                     {product.name}
                   </td>
                   <td className="h-12 px-4 text-muted-foreground">
                     {product.uploadedAt}
                   </td>
                   <td className="h-12 px-4">
-                    <Button asChild size="sm" variant="ghost">
-                      <Link href={`/dashboard/products/${product.id}/edit`}>
-                        <Pencil className="mr-2 h-4 w-4" />
-                        编辑
-                      </Link>
-                    </Button>
+                    <div className="flex items-center gap-2">
+                      <Button asChild size="sm" variant="ghost">
+                        <Link href={`/dashboard/products/${product.id}/edit`}>
+                          <Pencil className="mr-2 h-4 w-4" />
+                          编辑
+                        </Link>
+                      </Button>
+                      <ProductStatusButton
+                        productId={product.id}
+                        status={product.status}
+                      />
+                      <span
+                        className={cn(
+                          "inline-flex h-7 items-center rounded-full border px-2.5 text-xs font-medium",
+                          getProductStatusClassName(product.status)
+                        )}
+                      >
+                        {getProductStatusLabel(product.status)}
+                      </span>
+                    </div>
                   </td>
                 </tr>
               ))

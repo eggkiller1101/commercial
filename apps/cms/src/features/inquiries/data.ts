@@ -11,6 +11,7 @@ export type InquiryDetail = {
   message: string;
   productId: string;
   quoteFile: string | null;
+  quoteFileUrl: string | null;
 };
 
 export type InquiryListItem = Pick<
@@ -51,6 +52,7 @@ function mapInquiryDetail(
     email: string | null;
     product_id: number | null;
     message: string | null;
+    quote_file_url: string | null;
     created_at: string;
   }
 ): InquiryDetail {
@@ -66,7 +68,12 @@ function mapInquiryDetail(
     email: inquiry.email ?? "",
     productId: inquiry.product_id ? String(inquiry.product_id) : "",
     message: inquiry.message ?? "",
-    quoteFile: null
+    quoteFile: inquiry.quote_file_url
+      ? decodeURIComponent(
+          inquiry.quote_file_url.split("/").pop() ?? "inquiry-quote-file"
+        )
+      : null,
+    quoteFileUrl: inquiry.quote_file_url
   };
 }
 
@@ -127,7 +134,9 @@ export async function getInquiryById(
     if (Number.isFinite(numericId)) {
       const { data, error } = await supabase
         .from("inquiries")
-        .select("id,name,company,phone,email,product_id,message,created_at")
+        .select(
+          "id,name,company,phone,email,product_id,message,quote_file_url,created_at"
+        )
         .eq("id", numericId)
         .maybeSingle();
 
@@ -144,14 +153,27 @@ export async function getInquiryById(
   return null;
 }
 
-export async function getInquiryQuoteFile(
-  inquiryId: string
-): Promise<{ content: string; contentType: string; filename: string } | null> {
+export async function getInquiryQuoteFile(inquiryId: string): Promise<{
+  content: ArrayBuffer;
+  contentType: string;
+  filename: string;
+} | null> {
   const inquiry = await getInquiryById(inquiryId);
 
-  if (!inquiry?.quoteFile) {
+  if (!inquiry?.quoteFile || !inquiry.quoteFileUrl) {
     return null;
   }
 
-  return null;
+  const response = await fetch(inquiry.quoteFileUrl);
+
+  if (!response.ok) {
+    return null;
+  }
+
+  return {
+    content: await response.arrayBuffer(),
+    contentType:
+      response.headers.get("content-type") || "application/octet-stream",
+    filename: inquiry.quoteFile
+  };
 }

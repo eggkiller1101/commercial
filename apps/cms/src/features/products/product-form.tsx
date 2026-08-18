@@ -7,25 +7,42 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 
-import type { ProductFormValues } from "./data";
+import type { ProductFormOptions, ProductFormValues } from "./data";
 
 type ProductFormProps = {
   defaultValues?: ProductFormValues;
+  options: ProductFormOptions;
 };
 
 type ProductFormErrors = Partial<
   Record<
-    "productName" | "productId" | "description" | "category" | "images" | "form",
+    | "productName"
+    | "productModel"
+    | "summary"
+    | "description"
+    | "applicationNotes"
+    | "primaryCategoryId"
+    | "subcategoryId"
+    | "sku"
+    | "images"
+    | "form",
     string
   >
 >;
 
 const allowedImageTypes = ["image/jpeg", "image/png"];
 
-export function ProductForm({ defaultValues }: ProductFormProps) {
+export function ProductForm({ defaultValues, options }: ProductFormProps) {
   const [errors, setErrors] = useState<ProductFormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedCategoryId, setSelectedCategoryId] = useState(
+    defaultValues?.primaryCategoryId ?? ""
+  );
   const [successMessage, setSuccessMessage] = useState("");
+
+  const visibleSubcategories = options.subcategories.filter(
+    (subcategory) => subcategory.categoryId === selectedCategoryId
+  );
 
   function clearError(field: keyof ProductFormErrors) {
     setSuccessMessage("");
@@ -76,16 +93,28 @@ export function ProductForm({ defaultValues }: ProductFormProps) {
       nextErrors.productName = "请输入产品名称";
     }
 
-    if (!String(formData.get("productId") ?? "").trim()) {
-      nextErrors.productId = "请输入产品id";
+    if (!String(formData.get("productModel") ?? "").trim()) {
+      nextErrors.productModel = "请输入产品型号";
+    }
+
+    if (!String(formData.get("summary") ?? "").trim()) {
+      nextErrors.summary = "请输入产品简介";
     }
 
     if (!String(formData.get("description") ?? "").trim()) {
       nextErrors.description = "请输入产品描述";
     }
 
-    if (!String(formData.get("category") ?? "").trim()) {
-      nextErrors.category = "请输入产品分类";
+    if (!String(formData.get("primaryCategoryId") ?? "").trim()) {
+      nextErrors.primaryCategoryId = "请选择一级分类";
+    }
+
+    if (!String(formData.get("subcategoryId") ?? "").trim()) {
+      nextErrors.subcategoryId = "请选择二级分类";
+    }
+
+    if (!String(formData.get("sku") ?? "").trim()) {
+      nextErrors.sku = "请输入 SKU 编码";
     }
 
     const imageInput = event.currentTarget.elements.namedItem("images");
@@ -108,18 +137,31 @@ export function ProductForm({ defaultValues }: ProductFormProps) {
     setSuccessMessage("");
 
     try {
-      const response = await fetch("/api/products", {
+      const isEditing = Boolean(defaultValues?.databaseId);
+      const response = await fetch(
+        isEditing ? `/api/products/${defaultValues?.databaseId}` : "/api/products",
+        {
         body: JSON.stringify({
-          category: String(formData.get("category") ?? "").trim(),
+          applicationNotes: String(
+            formData.get("applicationNotes") ?? ""
+          ).trim(),
           description: String(formData.get("description") ?? "").trim(),
-          productId: String(formData.get("productId") ?? "").trim(),
-          productName: String(formData.get("productName") ?? "").trim()
+          isFeatured: String(formData.get("isFeatured") ?? "false") === "true",
+          primaryCategoryId: String(
+            formData.get("primaryCategoryId") ?? ""
+          ).trim(),
+          productModel: String(formData.get("productModel") ?? "").trim(),
+          productName: String(formData.get("productName") ?? "").trim(),
+          sku: String(formData.get("sku") ?? "").trim(),
+          subcategoryId: String(formData.get("subcategoryId") ?? "").trim(),
+          summary: String(formData.get("summary") ?? "").trim()
         }),
         headers: {
           "Content-Type": "application/json"
         },
-        method: "POST"
-      });
+          method: isEditing ? "PATCH" : "POST"
+        }
+      );
       const result = (await response.json()) as {
         message?: string;
         ok?: boolean;
@@ -133,7 +175,11 @@ export function ProductForm({ defaultValues }: ProductFormProps) {
         return;
       }
 
-      setSuccessMessage(`产品已发布，数据库 id：${result.productId}`);
+      setSuccessMessage(
+        isEditing
+          ? "产品已保存并上架"
+          : `产品已发布，数据库 id：${result.productId}`
+      );
     } catch {
       setErrors({
         form: "产品保存失败，请稍后重试"
@@ -166,16 +212,46 @@ export function ProductForm({ defaultValues }: ProductFormProps) {
         </label>
 
         <label className="grid gap-2">
-          <span className="text-sm font-medium">产品id</span>
+          <span className="text-sm font-medium">产品型号</span>
           <Input
-            defaultValue={defaultValues?.productId}
+            defaultValue={defaultValues?.productModel}
             disabled={isSubmitting}
-            name="productId"
-            onChange={() => clearError("productId")}
-            placeholder="请输入产品id"
+            name="productModel"
+            onChange={() => clearError("productModel")}
+            placeholder="请输入产品型号"
           />
-          {errors.productId ? (
-            <span className="text-xs text-destructive">{errors.productId}</span>
+          {errors.productModel ? (
+            <span className="text-xs text-destructive">
+              {errors.productModel}
+            </span>
+          ) : null}
+        </label>
+
+        <label className="grid gap-2">
+          <span className="text-sm font-medium">SKU 编码</span>
+          <Input
+            defaultValue={defaultValues?.sku}
+            disabled={isSubmitting}
+            name="sku"
+            onChange={() => clearError("sku")}
+            placeholder="请输入 SKU 编码"
+          />
+          {errors.sku ? (
+            <span className="text-xs text-destructive">{errors.sku}</span>
+          ) : null}
+        </label>
+
+        <label className="grid gap-2">
+          <span className="text-sm font-medium">产品简介</span>
+          <Textarea
+            defaultValue={defaultValues?.summary}
+            disabled={isSubmitting}
+            name="summary"
+            onChange={() => clearError("summary")}
+            placeholder="请输入产品简介，用于 web 前台列表展示"
+          />
+          {errors.summary ? (
+            <span className="text-xs text-destructive">{errors.summary}</span>
           ) : null}
         </label>
 
@@ -193,6 +269,17 @@ export function ProductForm({ defaultValues }: ProductFormProps) {
               {errors.description}
             </span>
           ) : null}
+        </label>
+
+        <label className="grid gap-2">
+          <span className="text-sm font-medium">应用说明</span>
+          <Textarea
+            defaultValue={defaultValues?.applicationNotes}
+            disabled={isSubmitting}
+            name="applicationNotes"
+            onChange={() => clearError("applicationNotes")}
+            placeholder="请输入适用场景、安装注意事项，可选"
+          />
         </label>
 
         <label className="grid gap-2">
@@ -230,18 +317,79 @@ export function ProductForm({ defaultValues }: ProductFormProps) {
         </label>
 
         <label className="grid gap-2">
-          <span className="text-sm font-medium">产品分类</span>
-          <Input
-            defaultValue={defaultValues?.category}
+          <span className="text-sm font-medium">一级分类</span>
+          <select
+            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+            defaultValue={defaultValues?.primaryCategoryId}
             disabled={isSubmitting}
-            name="category"
-            onChange={() => clearError("category")}
-            placeholder="请输入产品分类"
-          />
-          {errors.category ? (
-            <span className="text-xs text-destructive">{errors.category}</span>
+            name="primaryCategoryId"
+            onChange={(event) => {
+              setSelectedCategoryId(event.currentTarget.value);
+              clearError("primaryCategoryId");
+            }}
+          >
+            <option value="">请选择一级分类</option>
+            {options.categories.map((category) => (
+              <option key={category.id} value={category.id}>
+                {category.name}
+              </option>
+            ))}
+          </select>
+          {errors.primaryCategoryId ? (
+            <span className="text-xs text-destructive">
+              {errors.primaryCategoryId}
+            </span>
           ) : null}
         </label>
+
+        <label className="grid gap-2">
+          <span className="text-sm font-medium">二级分类</span>
+          <select
+            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+            defaultValue={defaultValues?.subcategoryId}
+            disabled={isSubmitting || !selectedCategoryId}
+            name="subcategoryId"
+            onChange={() => clearError("subcategoryId")}
+          >
+            <option value="">请选择二级分类</option>
+            {visibleSubcategories.map((subcategory) => (
+              <option key={subcategory.id} value={subcategory.id}>
+                {subcategory.name}
+              </option>
+            ))}
+          </select>
+          {errors.subcategoryId ? (
+            <span className="text-xs text-destructive">
+              {errors.subcategoryId}
+            </span>
+          ) : null}
+        </label>
+
+        <fieldset className="grid gap-2">
+          <span className="text-sm font-medium">是否推荐</span>
+          <div className="flex gap-4 rounded-md border bg-background px-3 py-2">
+            <label className="flex items-center gap-2 text-sm">
+              <input
+                defaultChecked={defaultValues?.isFeatured === true}
+                disabled={isSubmitting}
+                name="isFeatured"
+                type="radio"
+                value="true"
+              />
+              是
+            </label>
+            <label className="flex items-center gap-2 text-sm">
+              <input
+                defaultChecked={defaultValues?.isFeatured !== true}
+                disabled={isSubmitting}
+                name="isFeatured"
+                type="radio"
+                value="false"
+              />
+              否
+            </label>
+          </div>
+        </fieldset>
       </div>
 
       {errors.form ? (

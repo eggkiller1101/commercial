@@ -4,10 +4,15 @@ import { requireApiPermission } from "@/features/auth/guards";
 import { createProduct } from "@/features/products/data";
 
 type ProductRequestBody = {
-  category?: string;
+  applicationNotes?: string;
   description?: string;
-  productId?: string;
+  isFeatured?: boolean;
+  primaryCategoryId?: string;
+  productModel?: string;
   productName?: string;
+  sku?: string;
+  subcategoryId?: string;
+  summary?: string;
 };
 
 export async function POST(request: Request) {
@@ -21,21 +26,32 @@ export async function POST(request: Request) {
 
   if (
     !body.productName?.trim() ||
-    !body.productId?.trim() ||
+    !body.productModel?.trim() ||
+    !body.summary?.trim() ||
     !body.description?.trim() ||
-    !body.category?.trim()
+    !body.primaryCategoryId?.trim() ||
+    !body.subcategoryId?.trim() ||
+    !body.sku?.trim()
   ) {
     return NextResponse.json(
-      { message: "产品名称、产品id、产品描述、产品分类均为必填" },
+      {
+        message:
+          "产品名称、产品型号、产品简介、产品描述、一级分类、二级分类、SKU 编码均为必填"
+      },
       { status: 400 }
     );
   }
 
   const result = await createProduct({
-    category: body.category,
+    applicationNotes: body.applicationNotes ?? "",
     description: body.description,
-    productId: body.productId,
-    productName: body.productName
+    isFeatured: body.isFeatured === true,
+    primaryCategoryId: body.primaryCategoryId,
+    productModel: body.productModel,
+    productName: body.productName,
+    sku: body.sku,
+    subcategoryId: body.subcategoryId,
+    summary: body.summary
   });
 
   if (!result.ok) {
