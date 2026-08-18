@@ -34,38 +34,28 @@ const sidebarGroups = [
     permission: "manage_content",
     items: [
       {
-        label: "一级分类列表",
+        label: "产品分类",
         href: "/dashboard/categories",
         icon: LayoutDashboard
       },
       {
-        label: "一级分类新增",
-        href: "/dashboard/categories/new",
-        icon: PencilLine
-      },
-      {
-        label: "二级分类列表",
-        href: "/dashboard/categories/subcategories",
-        icon: LayoutDashboard
-      },
-      {
-        label: "二级分类新增",
-        href: "/dashboard/categories/subcategories/new",
+        label: "资料分类",
+        href: "/dashboard/categories/documents",
         icon: PencilLine
       }
     ]
   },
   {
-    label: "文件管理",
+    label: "资料管理",
     icon: Files,
     permission: "manage_content",
     items: [
       {
-        label: "文件分类",
+        label: "资料列表",
         href: "/dashboard/documents",
         icon: LayoutDashboard
       },
-      { label: "文件新增", href: "/dashboard/documents/new", icon: PencilLine }
+      { label: "资料新增", href: "/dashboard/documents/new", icon: PencilLine }
     ]
   },
   {

@@ -173,6 +173,31 @@ export type Database = {
           }
         ];
       };
+      document_categories: {
+        Row: {
+          created_at: string;
+          id: number;
+          name: string;
+          parent_id: number | null;
+          slug: string;
+          sort_order: number;
+        };
+        Insert: Partial<
+          Database["public"]["Tables"]["document_categories"]["Row"]
+        >;
+        Update: Partial<
+          Database["public"]["Tables"]["document_categories"]["Row"]
+        >;
+        Relationships: [
+          {
+            foreignKeyName: "document_categories_parent_id_fkey";
+            columns: ["parent_id"];
+            isOneToOne: false;
+            referencedRelation: "document_categories";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
       inquiries: {
         Row: {
           id: number;
@@ -182,6 +207,7 @@ export type Database = {
           email: string | null;
           product_id: number | null;
           message: string | null;
+          quote_file_url: string | null;
           status: "new" | "contacted" | "closed";
           created_at: string;
           updated_at: string;

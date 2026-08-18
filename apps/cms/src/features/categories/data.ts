@@ -30,6 +30,19 @@ export type SubcategoryListItem = {
   uploadedAt: string;
 };
 
+export type DocumentCategoryFormValues = {
+  documentCategoryId?: string;
+  name: string;
+  slug: string;
+};
+
+export type DocumentCategoryListItem = {
+  id: string;
+  name: string;
+  slug: string;
+  uploadedAt: string;
+};
+
 export type CategoryOption = {
   id: string;
   name: string;
@@ -55,6 +68,15 @@ export type UpdateSubcategoryInput = CreateSubcategoryInput & {
   subcategoryId: string;
 };
 
+export type CreateDocumentCategoryInput = {
+  name: string;
+  slug: string;
+};
+
+export type UpdateDocumentCategoryInput = CreateDocumentCategoryInput & {
+  documentCategoryId: string;
+};
+
 export type CreateCategoryResult =
   | {
       categoryId: string;
@@ -78,6 +100,18 @@ export type CreateSubcategoryResult =
 export type UpdateCategoryResult = CreateCategoryResult;
 export type UpdateSubcategoryResult = CreateSubcategoryResult;
 
+export type DocumentCategoryResult =
+  | {
+      documentCategoryId: string;
+      ok: true;
+    }
+  | {
+      message: string;
+      ok: false;
+    };
+
+export type UpdateDocumentCategoryResult = DocumentCategoryResult;
+
 export type PaginatedCategories = {
   items: CategoryListItem[];
   page: number;
@@ -88,6 +122,14 @@ export type PaginatedCategories = {
 
 export type PaginatedSubcategories = {
   items: SubcategoryListItem[];
+  page: number;
+  pageSize: number;
+  total: number;
+  totalPages: number;
+};
+
+export type PaginatedDocumentCategories = {
+  items: DocumentCategoryListItem[];
   page: number;
   pageSize: number;
   total: number;
@@ -503,5 +545,200 @@ export async function getSubcategoryById(
     slug: data.slug ?? "",
     subcategoryId: String(data.id),
     subcategoryName: data.name
+  };
+}
+
+export async function getDocumentCategories(params: {
+  page: number;
+  pageSize: number;
+}): Promise<PaginatedDocumentCategories> {
+  const supabase = createSupabaseServerClient();
+
+  if (supabase) {
+    const requestedPage = Math.max(params.page, 1);
+    const from = (requestedPage - 1) * params.pageSize;
+    const to = from + params.pageSize - 1;
+    const { count, data, error } = await supabase
+      .from("document_categories")
+      .select("id,name,slug,created_at", { count: "exact" })
+      .order("sort_order", { ascending: true })
+      .order("created_at", { ascending: false })
+      .range(from, to);
+
+    if (!error && data) {
+      const total = count ?? data.length;
+      const totalPages = Math.max(Math.ceil(total / params.pageSize), 1);
+      const page = Math.min(requestedPage, totalPages);
+
+      return {
+        items: data.map((category) => ({
+          id: String(category.id),
+          name: category.name,
+          slug: category.slug,
+          uploadedAt: formatDate(category.created_at)
+        })),
+        page,
+        pageSize: params.pageSize,
+        total,
+        totalPages
+      };
+    }
+
+    console.error("Failed to load document categories from Supabase", error);
+  }
+
+  return {
+    items: [],
+    page: 1,
+    pageSize: params.pageSize,
+    total: 0,
+    totalPages: 1
+  };
+}
+
+export async function getDocumentCategoryById(
+  documentCategoryId: string
+): Promise<DocumentCategoryFormValues | null> {
+  const supabase = createSupabaseServerClient();
+
+  if (!supabase) {
+    return null;
+  }
+
+  const numericId = Number(documentCategoryId);
+
+  if (!Number.isFinite(numericId)) {
+    return null;
+  }
+
+  const { data, error } = await supabase
+    .from("document_categories")
+    .select("id,name,slug")
+    .eq("id", numericId)
+    .maybeSingle();
+
+  if (error) {
+    console.error("Failed to load document category from Supabase", error);
+    return null;
+  }
+
+  if (!data) {
+    return null;
+  }
+
+  return {
+    documentCategoryId: String(data.id),
+    name: data.name,
+    slug: data.slug
+  };
+}
+
+export async function getDocumentCategoryOptions(): Promise<CategoryOption[]> {
+  const supabase = createSupabaseServerClient();
+
+  if (!supabase) {
+    return [];
+  }
+
+  const { data, error } = await supabase
+    .from("document_categories")
+    .select("id,name")
+    .order("sort_order", { ascending: true })
+    .order("name", { ascending: true });
+
+  if (error) {
+    console.error("Failed to load document category options", error);
+    return [];
+  }
+
+  return data.map((category) => ({
+    id: String(category.id),
+    name: category.name
+  }));
+}
+
+export async function createDocumentCategory(
+  input: CreateDocumentCategoryInput
+): Promise<DocumentCategoryResult> {
+  const supabase = createSupabaseAdminClient();
+
+  if (!supabase) {
+    return {
+      message: "Supabase service role 尚未配置，无法写入资料分类",
+      ok: false
+    };
+  }
+
+  const name = input.name.trim();
+  const slug = createSlug(input.slug || name) || `document-category-${Date.now()}`;
+
+  const { data, error } = await supabase
+    .from("document_categories")
+    .insert({
+      name,
+      slug
+    })
+    .select("id")
+    .single();
+
+  if (error) {
+    console.error("Failed to create document category in Supabase", error);
+
+    return {
+      message: error.message,
+      ok: false
+    };
+  }
+
+  return {
+    documentCategoryId: String(data.id),
+    ok: true
+  };
+}
+
+export async function updateDocumentCategory(
+  input: UpdateDocumentCategoryInput
+): Promise<UpdateDocumentCategoryResult> {
+  const supabase = createSupabaseAdminClient();
+
+  if (!supabase) {
+    return {
+      message: "Supabase service role 尚未配置，无法更新资料分类",
+      ok: false
+    };
+  }
+
+  const numericId = Number(input.documentCategoryId);
+
+  if (!Number.isFinite(numericId)) {
+    return {
+      message: "资料分类 id 无效",
+      ok: false
+    };
+  }
+
+  const name = input.name.trim();
+  const slug = createSlug(input.slug || name) || `document-category-${numericId}`;
+
+  const { error } = await supabase
+    .from("document_categories")
+    .update({
+      name,
+      slug
+    })
+    .eq("id", numericId);
+
+  if (error) {
+    console.error("Failed to update document category in Supabase", error);
+
+    return {
+      message: error.message,
+      ok: false
+    };
+  }
+
+  return {
+    documentCategoryId: String(numericId),
+    ok: true
   };
 }

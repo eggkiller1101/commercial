@@ -1,7 +1,13 @@
 import { NextResponse } from "next/server";
 
 import { requireApiPermission } from "@/features/auth/guards";
-import { createDocument } from "@/features/documents/data";
+import { updateDocument } from "@/features/documents/data";
+
+type DocumentRouteProps = {
+  params: Promise<{
+    documentId: string;
+  }>;
+};
 
 type DocumentRequestBody = {
   categoryId?: string;
@@ -12,13 +18,14 @@ type DocumentRequestBody = {
   version?: string;
 };
 
-export async function POST(request: Request) {
+export async function PATCH(request: Request, { params }: DocumentRouteProps) {
   const permission = await requireApiPermission("manage_content");
 
   if (permission.response) {
     return permission.response;
   }
 
+  const { documentId } = await params;
   const body = (await request.json()) as DocumentRequestBody;
 
   if (
@@ -33,8 +40,9 @@ export async function POST(request: Request) {
     );
   }
 
-  const result = await createDocument({
+  const result = await updateDocument({
     categoryId: body.categoryId,
+    documentId,
     fileType: body.fileType,
     fileUrl: body.fileUrl,
     language: body.language,
@@ -46,5 +54,5 @@ export async function POST(request: Request) {
     return NextResponse.json({ message: result.message }, { status: 400 });
   }
 
-  return NextResponse.json(result, { status: 201 });
+  return NextResponse.json(result);
 }

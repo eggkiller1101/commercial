@@ -7,21 +7,30 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 import type { DocumentFormValues } from "./data";
+import type { CategoryOption } from "@/features/categories/data";
 
 type DocumentFormProps = {
   defaultValues?: DocumentFormValues;
   mode?: "create" | "edit";
+  options: {
+    categories: CategoryOption[];
+  };
 };
 
 type DocumentFormErrors = Partial<
-  Record<"file" | "fileType" | "language" | "title" | "version" | "form", string>
+  Record<
+    "categoryId" | "file" | "fileType" | "form" | "language" | "title" | "version",
+    string
+  >
 >;
 
 export function DocumentForm({
   defaultValues,
-  mode = "create"
+  mode = "create",
+  options
 }: DocumentFormProps) {
   const [errors, setErrors] = useState<DocumentFormErrors>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedFileName, setSelectedFileName] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
 
@@ -46,6 +55,7 @@ export function DocumentForm({
 
     const formData = new FormData(event.currentTarget);
     const nextErrors: DocumentFormErrors = {};
+    const categoryId = String(formData.get("categoryId") ?? "").trim();
     const title = String(formData.get("title") ?? "").trim();
     const fileType = String(formData.get("fileType") ?? "").trim();
     const language = String(formData.get("language") ?? "").trim();
@@ -53,16 +63,20 @@ export function DocumentForm({
     const file =
       fileInput instanceof HTMLInputElement ? fileInput.files?.[0] : null;
 
+    if (!categoryId) {
+      nextErrors.categoryId = "请选择资料分类";
+    }
+
     if (!title) {
-      nextErrors.title = "请输入文件标题";
+      nextErrors.title = "请输入资料标题";
     }
 
     if (mode === "create" && !file) {
-      nextErrors.file = "请上传文件";
+      nextErrors.file = "请上传资料";
     }
 
     if (!fileType) {
-      nextErrors.fileType = "请输入文件类型";
+      nextErrors.fileType = "请输入资料类型";
     }
 
     if (!language) {
@@ -76,18 +90,55 @@ export function DocumentForm({
       return;
     }
 
-    if (mode === "create") {
-      setErrors({
-        form: "文件存储尚未配置，暂时无法保存文件。后续接入 R2 / Supabase Storage 后会在这里上传并生成真实文件地址。"
-      });
-      setSuccessMessage("");
-      return;
-    }
-
-    setErrors({
-      form: "文件编辑保存接口尚未配置，暂时只从数据库读取文件信息。"
-    });
+    setIsSubmitting(true);
     setSuccessMessage("");
+
+    try {
+      const isEditing = Boolean(defaultValues?.documentId);
+      const response = await fetch(
+        isEditing
+          ? `/api/documents/${defaultValues?.documentId}`
+          : "/api/documents",
+        {
+          body: JSON.stringify({
+            categoryId,
+            fileType,
+            fileUrl: defaultValues?.fileUrl ?? "",
+            language,
+            title,
+            version: String(formData.get("version") ?? "").trim()
+          }),
+          headers: {
+            "Content-Type": "application/json"
+          },
+          method: isEditing ? "PATCH" : "POST"
+        }
+      );
+      const result = (await response.json()) as {
+        documentId?: string;
+        message?: string;
+        ok?: boolean;
+      };
+
+      if (!response.ok || !result.ok) {
+        setErrors({
+          form:
+            result.message ??
+            "资料保存失败，请稍后重试。当前资料存储接入前，新增资料仍需要真实资料地址。"
+        });
+        return;
+      }
+
+      setSuccessMessage(
+        isEditing ? "资料已保存" : `资料已保存，数据库 id：${result.documentId}`
+      );
+    } catch {
+      setErrors({
+        form: "资料保存失败，请稍后重试"
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (
@@ -97,12 +148,36 @@ export function DocumentForm({
     >
       <div className="grid gap-5">
         <label className="grid gap-2">
-          <span className="text-sm font-medium">文件标题</span>
+          <span className="text-sm font-medium">资料分类</span>
+          <select
+            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+            defaultValue={defaultValues?.categoryId}
+            disabled={isSubmitting}
+            name="categoryId"
+            onChange={() => clearError("categoryId")}
+          >
+            <option value="">请选择资料分类</option>
+            {options.categories.map((category) => (
+              <option key={category.id} value={category.id}>
+                {category.name}
+              </option>
+            ))}
+          </select>
+          {errors.categoryId ? (
+            <span className="text-xs text-destructive">
+              {errors.categoryId}
+            </span>
+          ) : null}
+        </label>
+
+        <label className="grid gap-2">
+          <span className="text-sm font-medium">资料标题</span>
           <Input
             defaultValue={defaultValues?.title}
+            disabled={isSubmitting}
             name="title"
             onChange={() => clearError("title")}
-            placeholder="请输入文件标题"
+            placeholder="请输入资料标题"
           />
           {errors.title ? (
             <span className="text-xs text-destructive">{errors.title}</span>
@@ -111,11 +186,12 @@ export function DocumentForm({
 
         {mode === "create" ? (
           <label className="grid gap-2">
-            <span className="text-sm font-medium">上传文件</span>
+            <span className="text-sm font-medium">上传资料</span>
             <div className="flex min-h-32 flex-col items-center justify-center rounded-md border border-dashed bg-background px-4 py-6 text-center">
               <FileUp className="mb-3 h-8 w-8 text-muted-foreground" />
               <Input
                 className="max-w-sm cursor-pointer"
+                disabled={isSubmitting}
                 name="file"
                 onChange={handleFileChange}
                 type="file"
@@ -126,7 +202,7 @@ export function DocumentForm({
                 </p>
               ) : (
                 <p className="mt-3 text-xs text-muted-foreground">
-                  当前仅保留上传入口，文件存储接入后会生成真实文件地址。
+                  当前仅保留上传入口，资料存储接入后会生成真实资料地址。
                 </p>
               )}
               {errors.file ? (
@@ -137,9 +213,10 @@ export function DocumentForm({
         ) : null}
 
         <label className="grid gap-2">
-          <span className="text-sm font-medium">文件类型</span>
+          <span className="text-sm font-medium">资料类型</span>
           <Input
             defaultValue={defaultValues?.fileType}
+            disabled={isSubmitting}
             name="fileType"
             onChange={() => clearError("fileType")}
             placeholder="例如 pdf、csv、docx"
@@ -153,6 +230,7 @@ export function DocumentForm({
           <span className="text-sm font-medium">语言</span>
           <Input
             defaultValue={defaultValues?.language ?? "zh-CN"}
+            disabled={isSubmitting}
             name="language"
             onChange={() => clearError("language")}
             placeholder="zh-CN"
@@ -166,6 +244,7 @@ export function DocumentForm({
           <span className="text-sm font-medium">版本</span>
           <Input
             defaultValue={defaultValues?.version}
+            disabled={isSubmitting}
             name="version"
             onChange={() => clearError("version")}
             placeholder="请输入版本，可选"
@@ -178,9 +257,9 @@ export function DocumentForm({
       ) : null}
 
       <div className="flex justify-end">
-        <Button type="submit">
+        <Button disabled={isSubmitting} type="submit">
           <Save className="mr-2 h-4 w-4" />
-          保存文件
+          {isSubmitting ? "保存中" : "保存资料"}
         </Button>
       </div>
 

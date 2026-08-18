@@ -69,7 +69,7 @@ export default async function InquiryDetailPage({
               </span>
               {inquiry.quoteFile ? (
                 <span className="shrink-0 text-xs text-muted-foreground">
-                  csv格式
+                  已上传文件
                 </span>
               ) : null}
             </div>
