@@ -1,32 +1,38 @@
 import Link from "next/link";
 
+import { LanguageToggle } from "@/components/i18n/language-toggle";
 import { getCategoryTree } from "@/features/categories/data";
+import type { Dictionary, Locale } from "@/lib/i18n/dictionaries";
 
-const navItems = [
-  { href: "/", key: "home", label: "首页" },
-  { href: "/products", key: "products", label: "产品中心" },
-  { href: "/industries", key: "industries", label: "行业应用" },
-  { href: "/services", key: "services", label: "技术与服务" },
-  { href: "/cases", key: "cases", label: "项目案例" },
-  { href: "/resources", key: "resources", label: "资料中心" },
-  { href: "/about", key: "about", label: "关于我们" },
-  { href: "/contact", key: "contact", label: "联系我们" }
-];
-
-export async function SiteHeader() {
+export async function SiteHeader({
+  dictionary,
+  locale
+}: {
+  dictionary: Dictionary;
+  locale: Locale;
+}) {
   const categories = await getCategoryTree();
+  const t = dictionary.nav;
+  const navItems = [
+    { href: "/", key: "home", label: t.home },
+    { href: "/products", key: "products", label: t.products },
+    { href: "/industries", key: "industries", label: t.industries },
+    { href: "/services", key: "services", label: t.services },
+    { href: "/cases", key: "cases", label: t.cases },
+    { href: "/resources", key: "resources", label: t.resources },
+    { href: "/about", key: "about", label: t.about },
+    { href: "/contact", key: "contact", label: t.contact }
+  ];
 
   return (
     <>
       <div className="topbar">
         <div className="container">
           <div className="topbar-links">
-            <span>服务热线：400-000-0000</span>
+            <span>{t.serviceHotline}</span>
           </div>
           <div className="topbar-links">
-            <button className="lang-toggle-btn" type="button">
-              English
-            </button>
+            <LanguageToggle currentLocale={locale} label={t.switchLanguage} />
           </div>
         </div>
       </div>
@@ -56,12 +62,12 @@ export async function SiteHeader() {
               <input
                 id="header-search-input"
                 name="q"
-                placeholder="搜索产品名称 / 型号"
+                placeholder={t.searchPlaceholder}
                 type="search"
               />
             </form>
             <Link className="btn btn-primary btn-sm cart-btn" href="/quote-cart">
-              上传清单询价
+              {t.quote}
               <span className="cart-count-badge" id="cart-count-badge">
                 0
               </span>
@@ -104,7 +110,7 @@ export async function SiteHeader() {
                                   fontWeight: 600
                                 }}
                               >
-                                查看全部 →
+                                {t.viewAll}
                               </Link>
                             </li>
                           </ul>

@@ -1,6 +1,11 @@
 import Link from "next/link";
 
-export function SiteFooter() {
+import type { Dictionary } from "@/lib/i18n/dictionaries";
+
+export function SiteFooter({ dictionary }: { dictionary: Dictionary }) {
+  const t = dictionary.footer;
+  const nav = dictionary.nav;
+
   return (
     <footer className="site-footer">
       <div className="container footer-top">
@@ -11,74 +16,74 @@ export function SiteFooter() {
             <span className="logo-text">云工智上</span>
           </Link>
           <p>
-            专注高端消防管道系统与工业流体管道整体解决方案，提供产品选型、成套供货、技术支持与全周期服务。
+            {t.description}
           </p>
         </div>
 
         <div className="footer-col">
-          <h4>产品中心</h4>
+          <h4>{nav.products}</h4>
           <ul>
             <li>
-              <Link href="/products">全部产品</Link>
+              <Link href="/products">{t.allProducts}</Link>
             </li>
             <li>
-              <Link href="/quote-cart">上传清单询价</Link>
+              <Link href="/quote-cart">{nav.quote}</Link>
             </li>
             <li>
-              <Link href="/resources">资料中心</Link>
+              <Link href="/resources">{nav.resources}</Link>
             </li>
           </ul>
         </div>
 
         <div className="footer-col">
-          <h4>技术支持</h4>
+          <h4>{t.techSupport}</h4>
           <ul>
             <li>
-              <Link href="/industries">行业应用</Link>
+              <Link href="/industries">{nav.industries}</Link>
             </li>
             <li>
-              <Link href="/services">技术与服务</Link>
+              <Link href="/services">{nav.services}</Link>
             </li>
             <li>
-              <Link href="/cases">项目案例</Link>
+              <Link href="/cases">{nav.cases}</Link>
             </li>
           </ul>
         </div>
 
         <div className="footer-col">
-          <h4>关于我们</h4>
+          <h4>{t.about}</h4>
           <ul>
             <li>
-              <Link href="/about">公司介绍</Link>
+              <Link href="/about">{t.companyIntro}</Link>
             </li>
             <li>
-              <Link href="/contact">联系我们</Link>
+              <Link href="/contact">{nav.contact}</Link>
             </li>
           </ul>
         </div>
 
         <div className="footer-col">
-          <h4>联系方式</h4>
+          <h4>{t.contact}</h4>
           <ul className="footer-contact-list">
             <li>
-              <span className="footer-contact-label">服务热线</span>
+              <span className="footer-contact-label">{t.serviceHotline}</span>
               <span className="footer-contact-value">400-000-0000</span>
             </li>
             <li>
-              <span className="footer-contact-label">邮箱咨询</span>
+              <span className="footer-contact-label">{t.email}</span>
               <span className="footer-contact-value">
                 sales@cloudintelworks.com
               </span>
             </li>
             <li className="footer-contact-cta">
-              <Link href="/contact">在线询价</Link>
+              <Link href="/contact">{nav.contact}</Link>
             </li>
           </ul>
           <p
             className="text-muted"
             style={{ color: "var(--neutral-400)", fontSize: 12, marginTop: 10 }}
           >
-            工程师会在 1 个工作日内与您联系。
+            {t.response}
           </p>
         </div>
       </div>

@@ -1,14 +1,21 @@
 import Link from "next/link";
 
-export default function AboutPage() {
+import { getRequestDictionary } from "@/lib/i18n/server";
+
+export default async function AboutPage() {
+  const { dictionary } = await getRequestDictionary();
+  const t = dictionary.staticPages.about;
+  const common = dictionary.common;
+  const home = dictionary.home;
+
   return (
     <>
       <nav className="breadcrumb container" aria-label="breadcrumb">
         <ol>
           <li>
-            <Link href="/">首页</Link>
+            <Link href="/">{common.home}</Link>
           </li>
-          <li>关于我们</li>
+          <li>{t.breadcrumb}</li>
         </ol>
       </nav>
 
@@ -16,10 +23,10 @@ export default function AboutPage() {
         <div className="container hero-inner">
           <span className="partner-badge">
             <span className="dot" />
-            唯特利 Victaulic® 官方授权合作代理商
+            {home.heroBadge}
           </span>
-          <h1>云工智上（北京）科技有限公司</h1>
-          <p>专注高端消防管道系统、工业流体管道整体解决方案的专业化技术服务型企业</p>
+          <h1>{t.title}</h1>
+          <p>{t.subtitle}</p>
         </div>
       </div>
 
@@ -84,8 +91,8 @@ export default function AboutPage() {
         <section className="section">
           <div className="section-head">
             <div>
-              <h2>发展历程</h2>
-              <p>唯特利百年品牌积淀，云工智上本地化专业服务</p>
+              <h2>{t.historyTitle}</h2>
+              <p>{t.historyDesc}</p>
             </div>
           </div>
           <div className="timeline">
@@ -106,8 +113,8 @@ export default function AboutPage() {
         <section className="section">
           <div className="section-head">
             <div>
-              <h2>合规资质</h2>
-              <p>唯特利产品体系覆盖的国际主流认证</p>
+              <h2>{t.certTitle}</h2>
+              <p>{t.certDesc}</p>
             </div>
           </div>
           <div className="cert-badge-grid">
@@ -131,7 +138,7 @@ export default function AboutPage() {
             ))}
           </div>
           <p className="text-muted" style={{ fontSize: 12, marginTop: 12 }}>
-            具体产品适用认证以官方证书为准，如需某型号的完整认证清单，请联系工程师索取。
+            {t.certNote}
           </p>
         </section>
 
@@ -148,14 +155,14 @@ export default function AboutPage() {
           >
             <div>
               <h3 style={{ fontSize: 16, marginBottom: 6 }}>
-                想进一步了解公司资质或产品体系？
+                {t.ctaTitle}
               </h3>
               <p className="text-muted">
-                工程师可为您提供完整的公司介绍资料与产品认证清单。
+                {t.ctaDesc}
               </p>
             </div>
             <Link className="btn btn-primary" href="/contact">
-              联系我们
+              {common.contactUs}
             </Link>
           </div>
         </section>

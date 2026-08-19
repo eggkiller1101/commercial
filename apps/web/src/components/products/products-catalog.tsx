@@ -8,6 +8,11 @@ import type {
   ProductAttributeDefinition,
   ProductCardItem
 } from "@/features/products/data";
+import {
+  defaultLocale,
+  getDictionary,
+  type Locale
+} from "@/lib/i18n/dictionaries";
 
 const pageSize = 8;
 
@@ -198,12 +203,17 @@ function addToCart(product: ProductCardItem) {
 export function ProductsCatalog({
   attributeDefinitions,
   categories,
+  locale = defaultLocale,
   products
 }: {
   attributeDefinitions: ProductAttributeDefinition[];
   categories: CategoryItem[];
+  locale?: Locale;
   products: ProductCardItem[];
 }) {
+  const dictionary = getDictionary(locale);
+  const t = dictionary.products;
+  const common = dictionary.common;
   const [state, setState] = useState<CatalogState>(getInitialState);
   const activeCategory = useMemo(() => {
     for (const category of categories) {
@@ -331,11 +341,11 @@ export function ProductsCatalog({
     <main className="mx-auto max-w-[1200px] px-6">
       <div className="py-4 text-sm text-muted-foreground">
         <Link className="hover:text-foreground" href="/">
-          首页
+          {common.home}
         </Link>
         <span className="mx-2">/</span>
         <Link className="hover:text-foreground" href="/products">
-          产品中心
+          {t.breadcrumb}
         </Link>
         {activeCategory ? (
           <>
@@ -350,17 +360,17 @@ export function ProductsCatalog({
           <div className="category-tree-diagram">
             <div className="tree-diagram-head">
               <div>
-                <h2>产品分类总览</h2>
-                <p>点击任意节点直接进入该分类</p>
+                <h2>{t.categoryOverview}</h2>
+                <p>{t.categoryOverviewDesc}</p>
               </div>
               <div className="tree-diagram-legend">
                 <span>
                   <span className="dot l1" />
-                  大类
+                  {t.overview}
                 </span>
                 <span>
                   <span className="dot l2" />
-                  子类
+                  {t.childCategory}
                 </span>
               </div>
             </div>
@@ -373,7 +383,7 @@ export function ProductsCatalog({
                   }
                   type="button"
                 >
-                  全部产品
+                  {t.allProducts}
                   <span className="tree-node-count">{totalProducts}</span>
                 </button>
                 <ul>
@@ -442,7 +452,7 @@ export function ProductsCatalog({
       <div className="layout-with-sidebar">
         <aside>
           <div className="filter-panel">
-            <h4>产品分类</h4>
+            <h4>{t.categoryTitle}</h4>
             <ul className="category-tree">
               <li>
                 <button
@@ -450,7 +460,7 @@ export function ProductsCatalog({
                   onClick={() => updateState({ categorySlug: "", page: 1 })}
                   type="button"
                 >
-                  全部产品
+                  {t.allProducts}
                   <span className="count">{totalProducts}</span>
                 </button>
               </li>
@@ -504,7 +514,7 @@ export function ProductsCatalog({
 
           {activeCategory && activeAttributeDefinitions.length ? (
             <div className="filter-panel">
-              <h4>按技术参数筛选</h4>
+              <h4>{t.filterByAttributes}</h4>
               {activeAttributeDefinitions.map((definition) => {
                 const current = state.attrFilters[definition.code];
 
@@ -530,7 +540,7 @@ export function ProductsCatalog({
                               min: event.target.value
                             })
                           }
-                          placeholder="最小"
+                          placeholder={t.min}
                           type="number"
                           value={range.min ?? ""}
                         />
@@ -542,7 +552,7 @@ export function ProductsCatalog({
                               max: event.target.value
                             })
                           }
-                          placeholder="最大"
+                          placeholder={t.max}
                           type="number"
                           value={range.max ?? ""}
                         />
@@ -594,7 +604,7 @@ export function ProductsCatalog({
                 onClick={() => updateState({ attrFilters: {}, page: 1 })}
                 type="button"
               >
-                清除全部筛选
+                {t.clearFilters}
               </button>
             </div>
           ) : null}
@@ -603,14 +613,15 @@ export function ProductsCatalog({
         <section>
           {state.keyword.trim() ? (
             <div className="search-keyword-banner">
-              为你找到 <strong>{filteredProducts.length}</strong> 条与 “
-              {state.keyword.trim()}” 相关的产品
+              {t.keywordResultPrefix} <strong>{filteredProducts.length}</strong>{" "}
+              {t.keywordResultSuffix} “{state.keyword.trim()}”
             </div>
           ) : null}
 
           <div className="results-toolbar">
             <div className="results-count">
-              共 <strong>{filteredProducts.length}</strong> 款产品
+              {t.resultCountPrefix} <strong>{filteredProducts.length}</strong>{" "}
+              {t.resultCountSuffix}
             </div>
             <div className="toolbar-right">
               <div className="search-box">
@@ -622,7 +633,7 @@ export function ProductsCatalog({
                       page: 1
                     })
                   }
-                  placeholder="搜索产品名称 / 型号"
+                  placeholder={t.searchPlaceholder}
                   type="search"
                   value={state.keyword}
                 />
@@ -637,9 +648,9 @@ export function ProductsCatalog({
                 }
                 value={state.sort}
               >
-                <option value="newest">最新发布</option>
-                <option value="name_asc">名称 A-Z</option>
-                <option value="model_asc">型号 A-Z</option>
+                <option value="newest">{t.publishedNewest}</option>
+                <option value="name_asc">{t.sortName}</option>
+                <option value="model_asc">{t.sortModel}</option>
               </select>
             </div>
           </div>
@@ -650,7 +661,8 @@ export function ProductsCatalog({
             <div className="active-filters">
               {activeCategory ? (
                 <span className="filter-chip">
-                  分类：{activeCategory.name}
+                  {t.activeCategory}
+                  {activeCategory.name}
                   <button
                     onClick={() => updateState({ categorySlug: "", page: 1 })}
                     type="button"
@@ -661,7 +673,8 @@ export function ProductsCatalog({
               ) : null}
               {state.keyword.trim() ? (
                 <span className="filter-chip">
-                  关键词：{state.keyword.trim()}
+                  {t.keyword}
+                  {state.keyword.trim()}
                   <button
                     onClick={() => updateState({ keyword: "", page: 1 })}
                     type="button"
@@ -676,8 +689,10 @@ export function ProductsCatalog({
                 );
                 const label = definition?.name ?? code;
                 const text = Array.isArray(value)
-                  ? `${label}：${value.join("、")}`
-                  : `${label}：${value.min || "不限"} - ${value.max || "不限"}${
+                  ? `${label}: ${value.join(" / ")}`
+                  : `${label}: ${value.min || t.noLimit} - ${
+                      value.max || t.noLimit
+                    }${
                       definition?.unit ?? ""
                     }`;
 
@@ -702,14 +717,16 @@ export function ProductsCatalog({
                 <article className="product-card" key={product.id}>
                   <Link className="thumb" href={`/products/${product.slug}`}>
                     {product.isFeatured ? (
-                      <span className="badge badge-featured">重点推荐</span>
+                      <span className="badge badge-featured">
+                        {common.featured}
+                      </span>
                     ) : null}
                     {product.imageUrl ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img alt={product.name} src={product.imageUrl} />
                     ) : (
                       <span className="text-sm text-muted-foreground">
-                        暂无图片
+                        {common.noImage}
                       </span>
                     )}
                   </Link>
@@ -722,14 +739,14 @@ export function ProductsCatalog({
                         className="btn btn-outline btn-sm"
                         href={`/products/${product.slug}`}
                       >
-                        查看详情
+                        {common.viewDetails}
                       </Link>
                       <button
                         className="btn btn-add-cart btn-sm"
                         onClick={() => addToCart(product)}
                         type="button"
                       >
-                        + 加入清单
+                        {common.addToQuote}
                       </button>
                     </div>
                   </div>
@@ -738,7 +755,7 @@ export function ProductsCatalog({
             ) : (
               <div className="empty-state" style={{ gridColumn: "1 / -1" }}>
                 <div className="icon">🔍</div>
-                <p>没有找到符合条件的产品，试试调整筛选条件。</p>
+                <p>{t.empty}</p>
               </div>
             )}
           </div>

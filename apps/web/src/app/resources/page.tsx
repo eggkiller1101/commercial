@@ -1,26 +1,32 @@
 import Link from "next/link";
 
 import { getPublishedDocuments } from "@/features/documents/data";
+import { getRequestDictionary } from "@/lib/i18n/server";
 
 export default async function ResourcesPage() {
-  const documents = await getPublishedDocuments();
+  const [{ dictionary }, documents] = await Promise.all([
+    getRequestDictionary(),
+    getPublishedDocuments()
+  ]);
+  const t = dictionary.resources;
+  const common = dictionary.common;
 
   return (
     <>
       <nav className="breadcrumb container" aria-label="breadcrumb">
         <ol>
           <li>
-            <Link href="/">首页</Link>
+            <Link href="/">{common.home}</Link>
           </li>
-          <li>资料中心</li>
+          <li>{t.breadcrumb}</li>
         </ol>
       </nav>
 
       <div className="hero hero-compact">
         <div className="container hero-inner">
-          <div className="hero-eyebrow">资料中心</div>
-          <h1>产品说明书、安装指南与认证证书下载</h1>
-          <p>资料来自各产品详情页挂载的技术文档，随产品数据自动同步更新。</p>
+          <div className="hero-eyebrow">{t.eyebrow}</div>
+          <h1>{t.title}</h1>
+          <p>{t.subtitle}</p>
         </div>
       </div>
 
@@ -28,9 +34,9 @@ export default async function ResourcesPage() {
         <section className="section" style={{ paddingTop: 20 }}>
           <div className="resource-filter-bar">
             <button className="is-active" type="button">
-              全部资料
+              {t.all}
             </button>
-            <button type="button">PDF 文档</button>
+            <button type="button">{t.pdf}</button>
           </div>
 
           <div className="resource-list">
@@ -57,10 +63,10 @@ export default async function ResourcesPage() {
                         rel="noopener"
                         target="_blank"
                       >
-                        下载
+                        {common.download}
                       </a>
                     ) : (
-                      <span className="text-muted">暂无文件</span>
+                      <span className="text-muted">{common.noFile}</span>
                     )}
                   </li>
                 ))
@@ -68,7 +74,7 @@ export default async function ResourcesPage() {
                 <li>
                   <div className="empty-state" style={{ width: "100%" }}>
                     <div className="icon">📄</div>
-                    <p>暂无资料文件</p>
+                    <p>{t.empty}</p>
                   </div>
                 </li>
               )}

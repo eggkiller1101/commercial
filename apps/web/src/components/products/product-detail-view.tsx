@@ -5,6 +5,11 @@ import { useMemo, useState } from "react";
 
 import { InquiryForm } from "@/components/inquiry/inquiry-form";
 import type { ProductCardItem, ProductDetail } from "@/features/products/data";
+import {
+  defaultLocale,
+  getDictionary,
+  type Locale
+} from "@/lib/i18n/dictionaries";
 
 function addToCart(product: ProductDetail, quantity: number) {
   const storageKey = "cloudintel_quote_cart_v1";
@@ -52,12 +57,17 @@ function RelatedProductCard({ product }: { product: ProductCardItem }) {
 }
 
 export function ProductDetailView({
+  locale = defaultLocale,
   product,
   relatedProducts
 }: {
+  locale?: Locale;
   product: ProductDetail;
   relatedProducts: ProductCardItem[];
 }) {
+  const dictionary = getDictionary(locale);
+  const t = dictionary.products;
+  const common = dictionary.common;
   const [activeImage, setActiveImage] = useState(
     product.images[0] ?? product.imageUrl ?? "/assets/icons/generic-product.svg"
   );
@@ -66,12 +76,12 @@ export function ProductDetailView({
 
   const tabs = useMemo(
     () => [
-      { key: "description", label: "产品描述" },
-      { key: "specs", label: "技术参数" },
-      { key: "variants", label: "规格型号" },
-      { key: "documents", label: "相关文档" }
+      { key: "description", label: t.tabs.description },
+      { key: "specs", label: t.tabs.specs },
+      { key: "variants", label: t.tabs.variants },
+      { key: "documents", label: t.tabs.documents }
     ],
-    []
+    [t]
   );
 
   return (
@@ -79,10 +89,10 @@ export function ProductDetailView({
       <nav className="breadcrumb container" aria-label="breadcrumb">
         <ol>
           <li>
-            <Link href="/">首页</Link>
+            <Link href="/">{common.home}</Link>
           </li>
           <li>
-            <Link href="/products">产品中心</Link>
+            <Link href="/products">{t.breadcrumb}</Link>
           </li>
           {product.categoryName ? (
             <li>
@@ -134,12 +144,12 @@ export function ProductDetailView({
                   <span className="badge badge-category">{product.categoryName}</span>
                 ) : null}
                 {product.isFeatured ? (
-                  <span className="badge badge-featured">重点推荐</span>
+                  <span className="badge badge-featured">{common.featured}</span>
                 ) : null}
               </div>
               <h1 className="product-title">{product.name}</h1>
               <p className="text-muted" style={{ fontSize: 13 }}>
-                型号 / Style：
+                {t.model}
                 <strong style={{ color: "var(--primary-700)" }}>
                   {product.modelNumber}
                 </strong>
@@ -149,7 +159,7 @@ export function ProductDetailView({
               <div className="detail-actions">
                 <div className="qty-stepper" id="detail-qty-stepper">
                   <button
-                    aria-label="减少数量"
+                    aria-label={t.decreaseQty}
                     onClick={() => setQuantity((value) => Math.max(1, value - 1))}
                     type="button"
                   >
@@ -165,7 +175,7 @@ export function ProductDetailView({
                     value={quantity}
                   />
                   <button
-                    aria-label="增加数量"
+                    aria-label={t.increaseQty}
                     onClick={() => setQuantity((value) => value + 1)}
                     type="button"
                   >
@@ -177,17 +187,17 @@ export function ProductDetailView({
                   onClick={() => addToCart(product, quantity)}
                   type="button"
                 >
-                  + 加入询价清单
+                  {common.addToQuote}
                 </button>
                 <a className="btn btn-outline" href="#inquiry">
-                  直接提交询价
+                  {t.quoteNow}
                 </a>
                 <button
                   className="btn btn-outline"
                   onClick={() => setActiveTab("documents")}
                   type="button"
                 >
-                  下载技术资料
+                  {t.downloadDocuments}
                 </button>
               </div>
             </div>
@@ -213,10 +223,10 @@ export function ProductDetailView({
                 }`}
               >
                 <div className="prose">
-                  <p>{product.description || "暂无详细描述。"}</p>
+                  <p>{product.description || t.noDescription}</p>
                   {product.applicationNotes ? (
                     <p>
-                      <strong>适用场景/安装注意：</strong>
+                      <strong>{t.applicationNotes}</strong>
                       {product.applicationNotes}
                     </p>
                   ) : null}
@@ -226,7 +236,7 @@ export function ProductDetailView({
               <div
                 className={`tab-panel ${activeTab === "specs" ? "is-active" : ""}`}
               >
-                <p className="text-muted">暂无技术参数。</p>
+                <p className="text-muted">{t.noSpecs}</p>
               </div>
 
               <div
@@ -239,7 +249,7 @@ export function ProductDetailView({
                     <thead>
                       <tr>
                         <th>SKU</th>
-                        <th>规格名称</th>
+                        <th>{t.variantName}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -252,7 +262,7 @@ export function ProductDetailView({
                     </tbody>
                   </table>
                 ) : (
-                  <p className="text-muted">暂无规格型号数据。</p>
+                  <p className="text-muted">{t.noVariants}</p>
                 )}
               </div>
 
@@ -279,13 +289,13 @@ export function ProductDetailView({
                           rel="noopener"
                           target="_blank"
                         >
-                          下载
+                          {common.download}
                         </a>
                       </li>
                     ))}
                   </ul>
                 ) : (
-                  <p className="text-muted">暂无可下载的技术文档。</p>
+                  <p className="text-muted">{t.noDocuments}</p>
                 )}
               </div>
             </div>
@@ -295,7 +305,7 @@ export function ProductDetailView({
             <section className="section related-products" id="related-section">
               <div className="section-head">
                 <div>
-                  <h2>相关产品</h2>
+                  <h2>{t.related}</h2>
                 </div>
               </div>
               <div className="product-grid">
@@ -309,15 +319,15 @@ export function ProductDetailView({
           <section className="section" id="inquiry">
             <div className="section-head">
               <div>
-                <h2>立即询价</h2>
+                <h2>{t.inquiryTitle}</h2>
                 <p>
-                  咨询产品 <strong>{product.name}</strong>，工程师将在 1
-                  个工作日内与您联系
+                  {t.inquiryDescPrefix} <strong>{product.name}</strong>，
+                  {t.inquiryDescSuffix}
                 </p>
               </div>
             </div>
             <div style={{ maxWidth: 640 }}>
-              <InquiryForm productId={product.id} />
+              <InquiryForm locale={locale} productId={product.id} />
             </div>
           </section>
         </div>

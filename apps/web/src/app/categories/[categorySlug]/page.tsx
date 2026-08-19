@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 
 import { getCategoryBySlug } from "@/features/categories/data";
 import { getPublishedProducts } from "@/features/products/data";
+import { getRequestDictionary } from "@/lib/i18n/server";
 
 type CategoryPageProps = {
   params: Promise<{
@@ -12,10 +13,14 @@ type CategoryPageProps = {
 
 export default async function CategoryPage({ params }: CategoryPageProps) {
   const { categorySlug } = await params;
-  const [category, products] = await Promise.all([
+  const [category, products, { dictionary }] = await Promise.all([
     getCategoryBySlug(categorySlug),
-    getPublishedProducts({ categorySlug })
+    getPublishedProducts({ categorySlug }),
+    getRequestDictionary()
   ]);
+  const t = dictionary.category;
+  const productsText = dictionary.products;
+  const common = dictionary.common;
 
   if (!category) {
     notFound();
@@ -28,10 +33,10 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
       <nav className="breadcrumb container" aria-label="breadcrumb">
         <ol>
           <li>
-            <Link href="/">首页</Link>
+            <Link href="/">{common.home}</Link>
           </li>
           <li>
-            <Link href="/products">产品中心</Link>
+            <Link href="/products">{productsText.breadcrumb}</Link>
           </li>
           <li>{category.name}</li>
         </ol>
@@ -39,12 +44,14 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 
       <div className="hero hero-compact">
         <div className="container hero-inner">
-          <div className="hero-eyebrow">产品中心</div>
+          <div className="hero-eyebrow">{productsText.breadcrumb}</div>
           <h1>{category.name}</h1>
           <p>{category.description || ""}</p>
           <div className="hero-actions">
             <Link className="btn btn-secondary" href={`/products?category=${category.slug}`}>
-              浏览全部产品（{products.length}）
+              {t.browseAllPrefix}
+              {products.length}
+              {t.browseAllSuffix}
             </Link>
             <Link
               className="btn btn-outline"
@@ -55,7 +62,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
                 color: "#fff"
               }}
             >
-              获取选型建议
+              {t.getAdvice}
             </Link>
           </div>
         </div>
@@ -66,8 +73,8 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
           <section className="section" id="subcategory-section">
             <div className="section-head">
               <div>
-                <h2>子分类</h2>
-                <p>选择下面的子分类，快速定位到具体产品系列</p>
+                <h2>{t.subcategories}</h2>
+                <p>{t.subcategoriesDesc}</p>
               </div>
             </div>
             <div className="subcategory-grid">
@@ -82,8 +89,8 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
                     <img alt="" src="/assets/icons/generic-product.svg" />
                   </div>
                   <h3>{child.name}</h3>
-                  <p>查看该系列下的产品与技术资料。</p>
-                  <span className="card-link">查看产品 →</span>
+                  <p>{t.subcategoryDesc}</p>
+                  <span className="card-link">{t.viewProducts}</span>
                 </Link>
               ))}
             </div>
@@ -94,18 +101,18 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
           <section className="section" id="featured-section">
             <div className="section-head">
               <div>
-                <h2>重点推荐</h2>
-                <p>该分类下的重点产品</p>
+                <h2>{common.featured}</h2>
+                <p>{t.featuredDesc}</p>
               </div>
               <Link className="view-all" href={`/products?category=${category.slug}`}>
-                查看全部 →
+                {common.viewAll}
               </Link>
             </div>
             <div className="product-grid">
               {featuredProducts.map((product) => (
                 <article className="product-card" key={product.id}>
                   <Link className="thumb" href={`/products/${product.slug}`}>
-                    <span className="badge badge-featured">重点推荐</span>
+                    <span className="badge badge-featured">{common.featured}</span>
                     {product.imageUrl ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img alt={product.name} src={product.imageUrl} />
@@ -120,13 +127,13 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
                         className="btn btn-outline btn-sm"
                         href={`/products/${product.slug}`}
                       >
-                        查看详情
+                        {common.viewDetails}
                       </Link>
                       <Link
                         className="btn btn-add-cart btn-sm"
                         href={`/quote-cart?productId=${product.id}`}
                       >
-                        + 加入清单
+                        {common.addToQuote}
                       </Link>
                     </div>
                   </div>
@@ -149,12 +156,12 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
           >
             <div>
               <h3 style={{ fontSize: 16, marginBottom: 6 }}>
-                需要该分类的选型建议？
+                {t.ctaTitle}
               </h3>
-              <p className="text-muted">工程师可根据项目场景推荐合适产品。</p>
+              <p className="text-muted">{t.ctaDesc}</p>
             </div>
             <Link className="btn btn-primary" href="/contact">
-              联系我们
+              {common.contactUs}
             </Link>
           </div>
         </section>

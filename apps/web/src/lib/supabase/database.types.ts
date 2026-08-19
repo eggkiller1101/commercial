@@ -126,6 +126,7 @@ export type Database = {
           name: string;
           phone: string | null;
           product_id: number | null;
+          quote_file_url: string | null;
           status: "new" | "contacted" | "closed";
           updated_at: string;
         };

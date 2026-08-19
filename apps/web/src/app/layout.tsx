@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
+import { getRequestDictionary } from "@/lib/i18n/server";
 
 import "./globals.css";
 import "./prototype-css/base.css";
@@ -17,13 +18,15 @@ export const metadata: Metadata = {
 
 export const dynamic = "force-dynamic";
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+export default async function RootLayout({ children }: { children: ReactNode }) {
+  const { dictionary, locale } = await getRequestDictionary();
+
   return (
-    <html lang="zh-CN">
+    <html lang={locale === "zh" ? "zh-CN" : "en"}>
       <body>
-        <SiteHeader />
+        <SiteHeader dictionary={dictionary} locale={locale} />
         <main className="min-h-[calc(100vh-9rem)]">{children}</main>
-        <SiteFooter />
+        <SiteFooter dictionary={dictionary} />
       </body>
     </html>
   );

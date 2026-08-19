@@ -5,6 +5,7 @@ import {
   getPublishedProductBySlug,
   getRelatedProducts
 } from "@/features/products/data";
+import { getRequestLocale } from "@/lib/i18n/server";
 
 type ProductDetailPageProps = {
   params: Promise<{
@@ -22,7 +23,16 @@ export default async function ProductDetailPage({
     notFound();
   }
 
-  const relatedProducts = await getRelatedProducts(product);
+  const [relatedProducts, locale] = await Promise.all([
+    getRelatedProducts(product),
+    getRequestLocale()
+  ]);
 
-  return <ProductDetailView product={product} relatedProducts={relatedProducts} />;
+  return (
+    <ProductDetailView
+      locale={locale}
+      product={product}
+      relatedProducts={relatedProducts}
+    />
+  );
 }

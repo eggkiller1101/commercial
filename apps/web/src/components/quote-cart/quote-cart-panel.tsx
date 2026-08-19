@@ -4,6 +4,11 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 
 import { InquiryForm } from "@/components/inquiry/inquiry-form";
+import {
+  defaultLocale,
+  getDictionary,
+  type Locale
+} from "@/lib/i18n/dictionaries";
 
 type CartItem = {
   id: string;
@@ -31,7 +36,15 @@ function writeCart(items: CartItem[]) {
   window.localStorage.setItem(storageKey, JSON.stringify(items));
 }
 
-export function QuoteCartPanel({ productId }: { productId?: string }) {
+export function QuoteCartPanel({
+  locale = defaultLocale,
+  productId
+}: {
+  locale?: Locale;
+  productId?: string;
+}) {
+  const dictionary = getDictionary(locale);
+  const t = dictionary.quoteCart;
   const [items, setItems] = useState<CartItem[]>([]);
 
   useEffect(() => {
@@ -41,14 +54,14 @@ export function QuoteCartPanel({ productId }: { productId?: string }) {
       current.push({
         id: productId,
         modelNumber: "",
-        name: `产品 ID：${productId}`,
+        name: `${t.productId}${productId}`,
         quantity: 1
       });
       writeCart(current);
     }
 
     setItems(current);
-  }, [productId]);
+  }, [productId, t.productId]);
 
   const message = useMemo(() => {
     if (!items.length) {
@@ -56,13 +69,13 @@ export function QuoteCartPanel({ productId }: { productId?: string }) {
     }
 
     return [
-      "询价清单：",
+      t.inquiryList,
       ...items.map(
         (item) =>
           `- ${item.name}${item.modelNumber ? `（${item.modelNumber}）` : ""} x ${item.quantity}`
       )
     ].join("\n");
-  }, [items]);
+  }, [items, t.inquiryList]);
 
   function updateQuantity(id: string, quantity: number) {
     const next = items.map((item) =>
@@ -113,44 +126,36 @@ export function QuoteCartPanel({ productId }: { productId?: string }) {
                   onClick={() => removeItem(item.id)}
                   type="button"
                 >
-                  删除
+                  {t.delete}
                 </button>
               </div>
             ))
           ) : (
             <div className="cart-empty-state">
               <div className="icon">🧾</div>
-              <p>询价清单为空，可以从产品详情页加入产品，也可以直接填写右侧表单。</p>
+              <p>{t.cartEmpty}</p>
             </div>
           )}
         </div>
 
         <div className="inquiry-card" style={{ marginTop: 20 }}>
-          <h3 style={{ fontSize: 15, marginBottom: 12 }}>
-            图纸 / 清单上传（可选）
+          <h3 style={{ fontSize: 15, marginBottom: 8 }}>
+            {t.fileTitle}
           </h3>
-          <div className="upload-drop-zone">
-            <strong>上传 BOQ 清单 / CAD 图纸 / PDF 技术文件</strong>
-            这是原型演示，暂不支持真实文件上传与存储；正式上线后此处将接入文件存储服务。
-            <div>
-              <input
-                disabled
-                multiple
-                title="原型演示，暂未开放真实上传"
-                type="file"
-              />
-            </div>
-          </div>
+          <p className="text-muted" style={{ fontSize: 13 }}>
+            {t.fileDesc}
+          </p>
         </div>
       </div>
 
       <div>
         <div>
-          <h3 style={{ fontSize: 15, marginBottom: 16 }}>项目与联系人信息</h3>
+          <h3 style={{ fontSize: 15, marginBottom: 16 }}>{t.formTitle}</h3>
           <InquiryForm
             defaultMessage={message}
+            locale={locale}
             productId={items[0]?.id}
-            submitLabel="提交询价清单"
+            submitLabel={t.submitLabel}
           />
         </div>
 
@@ -163,11 +168,11 @@ export function QuoteCartPanel({ productId }: { productId?: string }) {
           }}
         >
           <p className="text-muted" style={{ fontSize: 12.5 }}>
-            没有具体产品，只想咨询项目方案？
+            {t.contactQuestion}
           </p>
           <p style={{ marginTop: 8 }}>
             <Link className="btn btn-outline btn-sm" href="/contact">
-              前往联系我们页面 →
+              {t.contactText}
             </Link>
           </p>
         </div>

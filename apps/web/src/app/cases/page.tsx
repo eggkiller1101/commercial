@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { getPublishedCases } from "@/features/cases/data";
+import { getRequestDictionary } from "@/lib/i18n/server";
 
 const fallbackCases = [
   ["✈️", "商旅交通建筑", "华东某国际机场航站楼消防系统改造", "为航站楼候机区、行李分拣区提供沟槽式消防管路系统整体解决方案。"],
@@ -12,24 +13,29 @@ const fallbackCases = [
 ];
 
 export default async function CasesPage() {
-  const cases = await getPublishedCases();
+  const [{ dictionary }, cases] = await Promise.all([
+    getRequestDictionary(),
+    getPublishedCases()
+  ]);
+  const t = dictionary.staticPages.cases;
+  const common = dictionary.common;
 
   return (
     <>
       <nav className="breadcrumb container" aria-label="breadcrumb">
         <ol>
           <li>
-            <Link href="/">首页</Link>
+            <Link href="/">{common.home}</Link>
           </li>
-          <li>项目案例</li>
+          <li>{t.breadcrumb}</li>
         </ol>
       </nav>
 
       <div className="hero hero-compact">
         <div className="container hero-inner">
-          <div className="hero-eyebrow">项目案例</div>
-          <h1>代表性工程场景与项目经验</h1>
-          <p>覆盖商旅交通建筑、能源核心场景、通用工业与市政基建、海外 EPC 等项目类型。</p>
+          <div className="hero-eyebrow">{t.breadcrumb}</div>
+          <h1>{t.title}</h1>
+          <p>{t.subtitle}</p>
         </div>
       </div>
 
@@ -37,12 +43,13 @@ export default async function CasesPage() {
         <section className="section" style={{ paddingTop: 20 }}>
           <div className="resource-filter-bar" id="case-filter-bar">
             <button className="is-active" type="button">
-              全部案例
+              {t.all}
             </button>
-            <button type="button">商旅交通建筑</button>
-            <button type="button">能源核心场景</button>
-            <button type="button">通用工业与市政基建</button>
-            <button type="button">海外 EPC</button>
+            {t.filters.map((filter) => (
+              <button key={filter} type="button">
+                {filter}
+              </button>
+            ))}
           </div>
 
           <div className="case-card-grid" id="case-grid">
@@ -51,9 +58,11 @@ export default async function CasesPage() {
                   <div className="case-card" key={caseItem.id}>
                     <div className="case-thumb">🏗️</div>
                     <div className="case-body">
-                      <span className="case-tag">{caseItem.author || "项目案例"}</span>
+                      <span className="case-tag">
+                        {caseItem.author || t.emptyTag}
+                      </span>
                       <h3>{caseItem.title}</h3>
-                      <p>{caseItem.summary || caseItem.content || "暂无案例简介"}</p>
+                      <p>{caseItem.summary || caseItem.content || t.emptySummary}</p>
                     </div>
                   </div>
                 ))
