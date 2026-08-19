@@ -6,6 +6,7 @@ import { ImagePlus, Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { uploadCmsFile } from "@/features/uploads/client";
 
 import type { CaseFormValues } from "./data";
 
@@ -109,6 +110,18 @@ export function CaseForm({ defaultValues }: CaseFormProps) {
 
     try {
       const isEditing = Boolean(defaultValues?.caseId);
+      const uploadedCover =
+        coverFile && coverFile.size > 0
+          ? await uploadCmsFile(coverFile, "caseCover")
+          : null;
+
+      if (uploadedCover && !uploadedCover.ok) {
+        setErrors({
+          coverImage: uploadedCover.message
+        });
+        return;
+      }
+
       const response = await fetch(
         isEditing ? `/api/cases/${defaultValues?.caseId}` : "/api/cases",
         {
@@ -116,6 +129,8 @@ export function CaseForm({ defaultValues }: CaseFormProps) {
             author,
             category,
             content,
+            coverImageUrl:
+              uploadedCover?.ok ? uploadedCover.url : defaultValues?.coverImageUrl ?? "",
             seoDescription,
             seoTitle,
             summary,

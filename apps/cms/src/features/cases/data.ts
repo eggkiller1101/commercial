@@ -24,6 +24,7 @@ export type SaveCaseInput = {
   caseId?: string;
   category: string;
   content: string;
+  coverImageUrl?: string;
   createdBy?: number;
   seoDescription: string;
   seoTitle: string;
@@ -123,7 +124,7 @@ export async function createCase(
       author: input.author.trim() || null,
       category_id: categoryId,
       content: input.content.trim(),
-      cover_image_url: null,
+      cover_image_url: input.coverImageUrl?.trim() || null,
       created_by: input.createdBy ?? null,
       published_at: new Date().toISOString(),
       seo_description: input.seoDescription.trim() || input.summary.trim(),
@@ -181,6 +182,9 @@ export async function updateCase(
       author: input.author.trim() || null,
       category_id: categoryId,
       content: input.content.trim(),
+      ...(input.coverImageUrl?.trim()
+        ? { cover_image_url: input.coverImageUrl.trim() }
+        : {}),
       published_at: new Date().toISOString(),
       seo_description: input.seoDescription.trim() || input.summary.trim(),
       seo_title: input.seoTitle.trim() || title,

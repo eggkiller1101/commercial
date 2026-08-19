@@ -6,6 +6,7 @@ import { createProduct } from "@/features/products/data";
 type ProductRequestBody = {
   applicationNotes?: string;
   description?: string;
+  imageUrls?: string[];
   isFeatured?: boolean;
   primaryCategoryId?: string;
   productModel?: string;
@@ -45,6 +46,7 @@ export async function POST(request: Request) {
   const result = await createProduct({
     applicationNotes: body.applicationNotes ?? "",
     description: body.description,
+    imageUrls: Array.isArray(body.imageUrls) ? body.imageUrls : [],
     isFeatured: body.isFeatured === true,
     primaryCategoryId: body.primaryCategoryId,
     productModel: body.productModel,

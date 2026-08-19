@@ -6,6 +6,7 @@ import { ImagePlus, Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { uploadCmsFile } from "@/features/uploads/client";
 
 import type { ProductFormOptions, ProductFormValues } from "./data";
 
@@ -138,6 +139,26 @@ export function ProductForm({ defaultValues, options }: ProductFormProps) {
 
     try {
       const isEditing = Boolean(defaultValues?.databaseId);
+      const imageInput = event.currentTarget.elements.namedItem("images");
+      const imageFiles =
+        imageInput instanceof HTMLInputElement
+          ? Array.from(imageInput.files ?? [])
+          : [];
+      const uploadedImageUrls: string[] = [];
+
+      for (const imageFile of imageFiles) {
+        const uploadedImage = await uploadCmsFile(imageFile, "productImage");
+
+        if (!uploadedImage.ok) {
+          setErrors({
+            images: uploadedImage.message
+          });
+          return;
+        }
+
+        uploadedImageUrls.push(uploadedImage.url);
+      }
+
       const response = await fetch(
         isEditing ? `/api/products/${defaultValues?.databaseId}` : "/api/products",
         {
@@ -146,6 +167,7 @@ export function ProductForm({ defaultValues, options }: ProductFormProps) {
             formData.get("applicationNotes") ?? ""
           ).trim(),
           description: String(formData.get("description") ?? "").trim(),
+          imageUrls: uploadedImageUrls,
           isFeatured: String(formData.get("isFeatured") ?? "false") === "true",
           primaryCategoryId: String(
             formData.get("primaryCategoryId") ?? ""

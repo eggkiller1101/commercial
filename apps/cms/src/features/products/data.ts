@@ -39,6 +39,7 @@ export type ProductListItem = {
 
 export type CreateProductInput = {
   description: string;
+  imageUrls: string[];
   isFeatured: boolean;
   primaryCategoryId: string;
   productModel: string;
@@ -271,6 +272,43 @@ async function saveProductSku(params: {
   }
 }
 
+async function replaceProductImages(params: {
+  imageUrls: string[];
+  productId: number;
+  productName: string;
+}) {
+  const supabase = createSupabaseAdminClient();
+
+  if (!supabase || params.imageUrls.length === 0) {
+    return;
+  }
+
+  const { error: deleteError } = await supabase
+    .from("product_images")
+    .delete()
+    .eq("product_id", params.productId);
+
+  if (deleteError) {
+    console.error("Failed to delete old product images", deleteError);
+    throw new Error(deleteError.message);
+  }
+
+  const { error: insertError } = await supabase.from("product_images").insert(
+    params.imageUrls.map((imageUrl, index) => ({
+      alt_text: params.productName,
+      image_url: imageUrl,
+      is_primary: index === 0,
+      product_id: params.productId,
+      sort_order: index
+    }))
+  );
+
+  if (insertError) {
+    console.error("Failed to save product images", insertError);
+    throw new Error(insertError.message);
+  }
+}
+
 export async function createProduct(
   input: CreateProductInput
 ): Promise<CreateProductResult> {
@@ -321,10 +359,15 @@ export async function createProduct(
       productName,
       sku: input.sku
     });
+    await replaceProductImages({
+      imageUrls: input.imageUrls,
+      productId: data.id,
+      productName
+    });
   } catch (skuError) {
     return {
       message:
-        skuError instanceof Error ? skuError.message : "产品 SKU 保存失败",
+        skuError instanceof Error ? skuError.message : "产品附加信息保存失败",
       ok: false
     };
   }
@@ -440,10 +483,15 @@ export async function updateProduct(
       productName,
       sku: input.sku
     });
+    await replaceProductImages({
+      imageUrls: input.imageUrls,
+      productId: numericId,
+      productName
+    });
   } catch (skuError) {
     return {
       message:
-        skuError instanceof Error ? skuError.message : "产品 SKU 保存失败",
+        skuError instanceof Error ? skuError.message : "产品附加信息保存失败",
       ok: false
     };
   }

@@ -7,6 +7,7 @@ type CaseRequestBody = {
   author?: string;
   category?: string;
   content?: string;
+  coverImageUrl?: string;
   seoDescription?: string;
   seoTitle?: string;
   summary?: string;
@@ -38,6 +39,7 @@ export async function POST(request: Request) {
     author: body.author ?? "",
     category: body.category,
     content: body.content,
+    coverImageUrl: body.coverImageUrl ?? "",
     createdBy: permission.session?.adminUserId,
     seoDescription: body.seoDescription ?? "",
     seoTitle: body.seoTitle ?? "",

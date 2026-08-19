@@ -12,6 +12,7 @@ type ProductRouteProps = {
 type ProductRequestBody = {
   applicationNotes?: string;
   description?: string;
+  imageUrls?: string[];
   isFeatured?: boolean;
   primaryCategoryId?: string;
   productModel?: string;
@@ -53,6 +54,7 @@ export async function PATCH(request: Request, { params }: ProductRouteProps) {
     applicationNotes: body.applicationNotes ?? "",
     databaseId: productId,
     description: body.description,
+    imageUrls: Array.isArray(body.imageUrls) ? body.imageUrls : [],
     isFeatured: body.isFeatured === true,
     primaryCategoryId: body.primaryCategoryId,
     productModel: body.productModel,

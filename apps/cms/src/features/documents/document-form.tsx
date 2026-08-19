@@ -5,6 +5,7 @@ import { FileUp, Save } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { uploadCmsFile } from "@/features/uploads/client";
 
 import type { DocumentFormValues } from "./data";
 import type { CategoryOption } from "@/features/categories/data";
@@ -95,6 +96,17 @@ export function DocumentForm({
 
     try {
       const isEditing = Boolean(defaultValues?.documentId);
+      const uploadedFile =
+        file && file.size > 0 ? await uploadCmsFile(file, "document") : null;
+
+      if (uploadedFile && !uploadedFile.ok) {
+        setErrors({
+          file: uploadedFile.message
+        });
+        return;
+      }
+
+      const uploadedFileUrl = uploadedFile?.ok ? uploadedFile.url : null;
       const response = await fetch(
         isEditing
           ? `/api/documents/${defaultValues?.documentId}`
@@ -103,7 +115,7 @@ export function DocumentForm({
           body: JSON.stringify({
             categoryId,
             fileType,
-            fileUrl: defaultValues?.fileUrl ?? "",
+            fileUrl: uploadedFileUrl ?? defaultValues?.fileUrl ?? "",
             language,
             title,
             version: String(formData.get("version") ?? "").trim()
@@ -184,33 +196,42 @@ export function DocumentForm({
           ) : null}
         </label>
 
-        {mode === "create" ? (
-          <label className="grid gap-2">
-            <span className="text-sm font-medium">上传资料</span>
-            <div className="flex min-h-32 flex-col items-center justify-center rounded-md border border-dashed bg-background px-4 py-6 text-center">
-              <FileUp className="mb-3 h-8 w-8 text-muted-foreground" />
-              <Input
-                className="max-w-sm cursor-pointer"
-                disabled={isSubmitting}
-                name="file"
-                onChange={handleFileChange}
-                type="file"
-              />
-              {selectedFileName ? (
-                <p className="mt-3 text-xs text-muted-foreground">
-                  已选择：{selectedFileName}
-                </p>
-              ) : (
-                <p className="mt-3 text-xs text-muted-foreground">
-                  当前仅保留上传入口，资料存储接入后会生成真实资料地址。
-                </p>
-              )}
-              {errors.file ? (
-                <p className="mt-2 text-xs text-destructive">{errors.file}</p>
-              ) : null}
-            </div>
-          </label>
-        ) : null}
+        <label className="grid gap-2">
+          <span className="text-sm font-medium">上传资料</span>
+          <div className="flex min-h-32 flex-col items-center justify-center rounded-md border border-dashed bg-background px-4 py-6 text-center">
+            <FileUp className="mb-3 h-8 w-8 text-muted-foreground" />
+            <Input
+              accept=".pdf,.csv,.doc,.docx,.xls,.xlsx"
+              className="max-w-sm cursor-pointer"
+              disabled={isSubmitting}
+              name="file"
+              onChange={handleFileChange}
+              type="file"
+            />
+            {selectedFileName ? (
+              <p className="mt-3 text-xs text-muted-foreground">
+                已选择：{selectedFileName}
+              </p>
+            ) : (
+              <p className="mt-3 text-xs text-muted-foreground">
+                {mode === "create"
+                  ? "上传后会存入 R2，并自动写入资料地址。"
+                  : "不选择新文件时，将保留当前资料地址。"}
+              </p>
+            )}
+            {defaultValues?.fileUrl ? (
+              <p
+                className="mt-2 max-w-full truncate text-xs text-muted-foreground"
+                title={defaultValues.fileUrl}
+              >
+                当前资料：{defaultValues.fileUrl}
+              </p>
+            ) : null}
+            {errors.file ? (
+              <p className="mt-2 text-xs text-destructive">{errors.file}</p>
+            ) : null}
+          </div>
+        </label>
 
         <label className="grid gap-2">
           <span className="text-sm font-medium">资料类型</span>

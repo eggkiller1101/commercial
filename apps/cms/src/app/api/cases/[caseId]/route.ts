@@ -13,6 +13,7 @@ type CaseRequestBody = {
   author?: string;
   category?: string;
   content?: string;
+  coverImageUrl?: string;
   seoDescription?: string;
   seoTitle?: string;
   summary?: string;
@@ -46,6 +47,7 @@ export async function PATCH(request: Request, { params }: CaseRouteProps) {
     caseId,
     category: body.category,
     content: body.content,
+    coverImageUrl: body.coverImageUrl ?? "",
     seoDescription: body.seoDescription ?? "",
     seoTitle: body.seoTitle ?? "",
     summary: body.summary,
