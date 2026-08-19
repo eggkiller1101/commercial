@@ -38,7 +38,20 @@ export async function SiteHeader({
       </div>
 
       <header className="site-header">
+        <input
+          aria-hidden="true"
+          className="nav-toggle-checkbox"
+          id="nav-toggle"
+          type="checkbox"
+        />
         <div className="container header-row-top">
+          <label
+            aria-label={t.toggleNav}
+            className="nav-toggle-btn"
+            htmlFor="nav-toggle"
+          >
+            ☰
+          </label>
           <Link className="logo" href="/">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img

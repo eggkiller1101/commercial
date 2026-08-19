@@ -62,6 +62,40 @@
   gap: 20px;
 }
 
+/* -------------------- 移动端导航折叠按钮（左上角） --------------------
+   导航栏在任何屏幕宽度下都必须存在，宽屏时保持原来的横向导航条；
+   窄屏时改用左上角的按钮折叠/展开导航，而不是直接隐藏导航。
+   用纯 CSS 的 checkbox + label 技巧实现，不需要额外的客户端组件。 */
+.nav-toggle-checkbox {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.nav-toggle-btn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.nav-toggle-btn:hover {
+  border-color: var(--primary-300);
+}
+
 .logo {
   display: flex;
   align-items: center;
@@ -395,10 +429,69 @@
   gap: 8px;
 }
 
-/* -------------------- 响应式：窄屏简化处理（原型阶段先保证可用） -------------------- */
+/* -------------------- 响应式：窄屏下导航栏折叠为左上角按钮，而不是消失 -------------------- */
 @media (max-width: 960px) {
+  .nav-toggle-btn {
+    display: inline-flex;
+    order: -1;
+    margin-right: 4px;
+  }
+
+  /* 导航条本身始终保留在 DOM/布局中，默认收起（高度为 0），
+     点击左上角按钮（勾选隐藏的 checkbox）后展开，而不是 display:none 直接消失 */
   .main-nav-bar {
+    max-height: 0;
+    overflow: hidden;
+    border-top: none;
+    transition: max-height 0.25s ease;
+  }
+
+  .nav-toggle-checkbox:checked ~ .main-nav-bar {
+    max-height: 80vh;
+    overflow-y: auto;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .main-nav-bar .container {
+    justify-content: flex-start;
+    padding-top: 4px;
+    padding-bottom: 8px;
+  }
+
+  .main-nav-list {
+    flex-direction: column;
+    flex-wrap: wrap;
+    width: 100%;
+    gap: 0;
+  }
+
+  .main-nav-list > li {
+    width: 100%;
+  }
+
+  .nav-link {
+    width: 100%;
+    height: auto;
+    padding: 12px 4px;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .mega-menu {
+    position: static;
+    transform: none;
+    width: 100%;
+    max-width: none;
+    box-shadow: none;
+    border: none;
+    padding: 4px 0 8px 16px;
     display: none;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px 24px;
+  }
+
+  .main-nav-list > li:hover .mega-menu,
+  .main-nav-list > li:focus-within .mega-menu {
+    display: grid;
   }
 
   .footer-top {

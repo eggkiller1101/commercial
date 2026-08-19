@@ -57,7 +57,7 @@ export default async function ServicesPage() {
               (item, index) => (
                 <div className="process-step" key={item}>
                   <div className="step-num">{index + 1}</div>
-                  <h4>{item}</h4>
+                  <h5>{item}</h5>
                   <p>{t.processItemDesc}</p>
                 </div>
               )

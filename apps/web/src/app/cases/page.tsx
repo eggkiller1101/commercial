@@ -61,7 +61,7 @@ export default async function CasesPage() {
                       <span className="case-tag">
                         {caseItem.author || t.emptyTag}
                       </span>
-                      <h3>{caseItem.title}</h3>
+                      <h1>{caseItem.title}</h1>
                       <p>{caseItem.summary || caseItem.content || t.emptySummary}</p>
                     </div>
                   </div>
@@ -71,7 +71,7 @@ export default async function CasesPage() {
                     <div className="case-thumb">{icon}</div>
                     <div className="case-body">
                       <span className="case-tag">{tag}</span>
-                      <h3>{title}</h3>
+                      <h1>{title}</h1>
                       <p>{desc}</p>
                     </div>
                   </div>

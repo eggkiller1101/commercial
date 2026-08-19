@@ -86,6 +86,10 @@ html,
 body {
   margin: 0;
   padding: 0;
+  /* 防止任何超宽子元素（如旧版 mega-menu、组织架构图等）撑出视口，
+     导致移动端出现横向滚动、页面被"推"到左边而看起来左侧没有留白 */
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 body {
@@ -136,9 +140,18 @@ button {
 }
 
 .container {
+  width: 100%;
   max-width: var(--container-width);
   margin: 0 auto;
   padding: 0 24px;
+  box-sizing: border-box;
+}
+
+/* 保证任何屏幕宽度下容器两侧都留有可见的 margin，居中显示 */
+@media (max-width: 480px) {
+  .container {
+    padding: 0 16px;
+  }
 }
 
 /* 通用工具类 */

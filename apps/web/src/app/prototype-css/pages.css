@@ -263,8 +263,10 @@
   height: 26px;
 }
 
+.scenario-card h1,
 .scenario-card h3 {
   font-size: 15px;
+  font-weight: 600;
   margin-bottom: 8px;
   color: var(--color-text);
 }

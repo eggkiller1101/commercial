@@ -36,7 +36,7 @@ export default async function IndustriesPage() {
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img alt="" src={icon} />
                   </div>
-                  <h3>{title}</h3>
+                  <h1>{title}</h1>
                   <p>{desc}</p>
                 </div>
                 <Link href="/contact">{t.cardCta}</Link>

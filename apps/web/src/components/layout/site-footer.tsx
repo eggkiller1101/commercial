@@ -75,16 +75,14 @@ export function SiteFooter({ dictionary }: { dictionary: Dictionary }) {
                 sales@cloudintelworks.com
               </span>
             </li>
+            <li>
+              <span className="footer-contact-label">{t.wechat}</span>
+              <span className="footer-contact-value">wechataccountexample</span>
+            </li>
             <li className="footer-contact-cta">
               <Link href="/contact">{nav.contact}</Link>
             </li>
           </ul>
-          <p
-            className="text-muted"
-            style={{ color: "var(--neutral-400)", fontSize: 12, marginTop: 10 }}
-          >
-            {t.response}
-          </p>
         </div>
       </div>
 

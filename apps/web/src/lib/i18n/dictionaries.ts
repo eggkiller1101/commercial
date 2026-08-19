@@ -16,8 +16,6 @@ export const dictionaries = {
       all: "全部",
       backHome: "返回首页",
       contactUs: "联系我们",
-      dataSource: "实时数据",
-      dataSourceText: "当前页面数据来自真实 Supabase 项目",
       download: "下载",
       featured: "重点推荐",
       home: "首页",
@@ -41,6 +39,7 @@ export const dictionaries = {
       services: "技术与服务",
       serviceHotline: "服务热线：400-000-0000",
       switchLanguage: "English",
+      toggleNav: "展开导航菜单",
       viewAll: "查看全部 →"
     },
     footer: {
@@ -51,7 +50,7 @@ export const dictionaries = {
       description:
         "专注高端消防管道系统与工业流体管道整体解决方案，提供产品选型、成套供货、技术支持与全周期服务。",
       email: "邮箱咨询",
-      response: "工程师会在 1 个工作日内与您联系。",
+      wechat: "微信咨询",
       serviceHotline: "服务热线",
       techSupport: "技术支持"
     },
@@ -281,8 +280,6 @@ export const dictionaries = {
       all: "All",
       backHome: "Back to Home",
       contactUs: "Contact Us",
-      dataSource: "Live Data",
-      dataSourceText: "This page is powered by the live Supabase project",
       download: "Download",
       featured: "Featured",
       home: "Home",
@@ -306,6 +303,7 @@ export const dictionaries = {
       services: "Services",
       serviceHotline: "Hotline: 400-000-0000",
       switchLanguage: "中文",
+      toggleNav: "Toggle navigation menu",
       viewAll: "View All →"
     },
     footer: {
@@ -316,7 +314,7 @@ export const dictionaries = {
       description:
         "Focused on premium fire protection piping systems and industrial fluid piping solutions, covering product selection, supply, technical support, and lifecycle service.",
       email: "Email",
-      response: "Our engineers will contact you within 1 business day.",
+      wechat: "WeChat",
       serviceHotline: "Hotline",
       techSupport: "Technical Support"
     },

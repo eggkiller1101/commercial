@@ -13,10 +13,6 @@ export default async function HomePage() {
 
   return (
     <>
-      <div className="data-source-banner">
-        <strong>{common.dataSource}</strong> · {common.dataSourceText}
-      </div>
-
       <div className="hero">
         <div className="container hero-inner">
           <span className="partner-badge">

@@ -804,19 +804,6 @@
   color: var(--danger-text);
 }
 
-/* -------------------- 数据来源提示条（原型专用，方便你判断当前看到的是不是真实数据） -------------------- */
-.data-source-banner {
-  background: var(--secondary-50);
-  color: var(--secondary-800);
-  font-size: 12.5px;
-  text-align: center;
-  padding: 6px 12px;
-}
-
-.data-source-banner strong {
-  font-weight: 700;
-}
-
 @media (max-width: 640px) {
   .form-grid-2,
   .spec-highlights {
@@ -1227,7 +1214,7 @@
   margin: 0 auto 10px;
 }
 
-.process-step h4 {
+.process-step h5 {
   font-size: 13.5px;
   margin-bottom: 4px;
 }
@@ -1425,8 +1412,9 @@
   letter-spacing: 0.4px;
 }
 
-.case-card h3 {
+.case-card h1 {
   font-size: 15px;
+  font-weight: 600;
   margin: 6px 0 8px;
 }
 
