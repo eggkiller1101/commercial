@@ -126,6 +126,22 @@
   font-weight: 600;
 }
 
+/* 联系我们页：左边表单 + 右边办公信息/常见问题的两栏布局。
+   宽屏时两栏并排；窄屏下（≤880px）收成单列——右边的办公信息和常见问题
+   跟着 DOM 顺序自然排到表单下方，而不是继续挤成两窄栏。 */
+.contact-form-grid {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  gap: 32px;
+  align-items: start;
+}
+
+@media (max-width: 880px) {
+  .contact-form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 .about-side {
   background: var(--neutral-0);
   border: 1px solid var(--color-border);

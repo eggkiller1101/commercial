@@ -24,7 +24,10 @@ export const dictionaries = {
       notFoundDescription: "请返回首页继续浏览。",
       notFoundTitle: "页面不存在",
       viewAll: "查看全部 →",
-      viewDetails: "查看详情"
+      viewDetails: "查看详情",
+      wechatQrAlt: "微信二维码",
+      wechatQrCaption: "微信扫一扫，添加工程师",
+      wechatQrClose: "关闭"
     },
     nav: {
       about: "关于我们",
@@ -237,10 +240,15 @@ export const dictionaries = {
       },
       cases: {
         all: "全部案例",
+        backToList: "← 返回项目案例列表",
         breadcrumb: "项目案例",
+        detailFilesTitle: "相关图片",
+        detailNoContent: "该案例暂无详细内容，欢迎联系工程师了解项目详情。",
+        detailPublishedLabel: "发布时间：",
         emptyTag: "项目案例",
         emptySummary: "暂无案例简介",
         filters: ["商旅交通建筑", "能源核心场景", "通用工业与市政基建", "海外 EPC"],
+        notFoundDesc: "该案例不存在或已下线。",
         subtitle: "覆盖商旅交通建筑、能源核心场景、通用工业与市政基建、海外 EPC 等项目类型。",
         title: "代表性工程场景与项目经验"
       },
@@ -288,7 +296,10 @@ export const dictionaries = {
       notFoundDescription: "Please return to the homepage to continue browsing.",
       notFoundTitle: "Page Not Found",
       viewAll: "View All →",
-      viewDetails: "View Details"
+      viewDetails: "View Details",
+      wechatQrAlt: "WeChat QR code",
+      wechatQrCaption: "Scan with WeChat to add our engineer",
+      wechatQrClose: "Close"
     },
     nav: {
       about: "About",
@@ -501,10 +512,15 @@ export const dictionaries = {
       },
       cases: {
         all: "All Cases",
+        backToList: "← Back to project cases",
         breadcrumb: "Project Cases",
+        detailFilesTitle: "Related Image",
+        detailNoContent: "No detailed content for this case yet — please contact our engineers for more information.",
+        detailPublishedLabel: "Published: ",
         emptyTag: "Project Case",
         emptySummary: "No case summary yet",
         filters: ["Hospitality & Transportation", "Energy Projects", "Industrial & Municipal", "Overseas EPC"],
+        notFoundDesc: "This case does not exist or is no longer available.",
         subtitle: "Covering hospitality and transportation buildings, energy projects, industrial and municipal infrastructure, and overseas EPC.",
         title: "Representative Engineering Scenarios and Project Experience"
       },

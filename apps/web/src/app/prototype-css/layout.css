@@ -130,6 +130,7 @@
 }
 
 .main-nav-bar .container {
+  position: relative;
   display: flex;
   justify-content: center;
 }
@@ -143,6 +144,17 @@
 .main-nav-list > li {
   position: relative;
   flex-shrink: 0;
+}
+
+/* "产品中心"排在导航第 2 项，明显偏靠导航栏左侧。mega-menu 原来是以它所在
+   的 <li> 自己的中点为基准水平居中展开（position:absolute 的定位基准是最近的
+   position:relative 祖先，也就是这个 <li> 本身），但下拉面板宽达 920px，
+   以一个偏左的锚点居中展开，右侧很容易超出视口——这就是"产品中心溢出屏幕
+   外"的原因。这里让 mega-menu 改成以整个导航栏容器（上面加了
+   position:relative 的 .main-nav-bar .container）为基准居中，而不是以自己
+   所在的 <li> 为基准，所以先把这个 <li> 的定位基准“让”给外层容器。 */
+.main-nav-list > li:has(.mega-menu) {
+  position: static;
 }
 
 .nav-link {
@@ -295,7 +307,10 @@
 
 /* -------------------- 面包屑 -------------------- */
 .breadcrumb {
-  padding: 16px 0;
+  /* 同上：product-detail-view.tsx 里是 className="breadcrumb container"，
+     两值简写会把 .container 的左右内边距清零。 */
+  padding-top: 16px;
+  padding-bottom: 16px;
   font-size: 13px;
   color: var(--color-text-muted);
 }
@@ -330,7 +345,14 @@
 }
 
 .footer-top {
-  padding: 56px 0 40px;
+  /* 注意：这里不能再用 padding: 56px 0 40px 这种三值简写——0 会把左右
+     padding 也一起设成 0，把 .container 类本来带的左右内边距直接覆盖掉，
+     宽屏时看不出来（容器本身没占满整个视口，两侧留白是"居中"带来的假象），
+     一旦屏幕宽度小于设计稿的最大宽度（几乎所有笔记本/平板/手机都会命中），
+     页脚内容就会真的贴到屏幕边缘。所以左右内边距交给 .container 类，这里
+     只设置上下内边距。 */
+  padding-top: 56px;
+  padding-bottom: 40px;
   display: grid;
   grid-template-columns: 1.3fr 0.9fr 0.9fr 0.9fr 1.8fr;
   gap: 32px;
@@ -420,7 +442,9 @@
 
 .footer-bottom {
   border-top: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 18px 0;
+  /* 同上：不用 padding: 18px 0 简写，避免把左右内边距清零。 */
+  padding-top: 18px;
+  padding-bottom: 18px;
   font-size: 12px;
   color: var(--neutral-500);
   display: flex;
@@ -496,5 +520,16 @@
 
   .footer-top {
     grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* 手机宽度下页脚 5 栏挤在 2 列网格里，每栏只有约 170px 宽，"联系方式"这一栏的
+   标签+数值一行放不下、显得很挤，看起来像是没有对齐。这里让页脚在手机宽度下
+   收成单列，每一栏独占一行的宽度，服务热线/邮箱/微信这几行才有地方把标签和
+   数值好好排开。 */
+@media (max-width: 640px) {
+  .footer-top {
+    grid-template-columns: 1fr;
+    gap: 28px;
   }
 }

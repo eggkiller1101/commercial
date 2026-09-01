@@ -55,7 +55,7 @@ export default async function CasesPage() {
           <div className="case-card-grid" id="case-grid">
             {cases.length
               ? cases.map((caseItem) => (
-                  <div className="case-card" key={caseItem.id}>
+                  <Link className="case-card" href={`/cases/${caseItem.slug}`} key={caseItem.id}>
                     <div className="case-thumb">🏗️</div>
                     <div className="case-body">
                       <span className="case-tag">
@@ -64,10 +64,12 @@ export default async function CasesPage() {
                       <h1>{caseItem.title}</h1>
                       <p>{caseItem.summary || caseItem.content || t.emptySummary}</p>
                     </div>
-                  </div>
+                  </Link>
                 ))
-              : fallbackCases.map(([icon, tag, title, desc]) => (
-                  <div className="case-card" key={title}>
+              : /* 下面这几个是数据库里还没有已发布案例时的占位示例，不是真实案例，
+                   所以不做成可点击链接（点进去也没有对应详情页内容）。 */
+                fallbackCases.map(([icon, tag, title, desc]) => (
+                  <div className="case-card" key={title} style={{ cursor: "default" }}>
                     <div className="case-thumb">{icon}</div>
                     <div className="case-body">
                       <span className="case-tag">{tag}</span>

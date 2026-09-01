@@ -1,10 +1,12 @@
 import Link from "next/link";
 
+import { WechatQrTrigger } from "@/components/common/wechat-qr-trigger";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
 
 export function SiteFooter({ dictionary }: { dictionary: Dictionary }) {
   const t = dictionary.footer;
   const nav = dictionary.nav;
+  const common = dictionary.common;
 
   return (
     <footer className="site-footer">
@@ -77,7 +79,13 @@ export function SiteFooter({ dictionary }: { dictionary: Dictionary }) {
             </li>
             <li>
               <span className="footer-contact-label">{t.wechat}</span>
-              <span className="footer-contact-value">wechataccountexample</span>
+              <WechatQrTrigger
+                caption={common.wechatQrCaption}
+                className="footer-contact-value"
+                closeLabel={common.wechatQrClose}
+                qrImageAlt={common.wechatQrAlt}
+                triggerLabel="wechataccountexample"
+              />
             </li>
             <li className="footer-contact-cta">
               <Link href="/contact">{nav.contact}</Link>
