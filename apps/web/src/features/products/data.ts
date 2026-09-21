@@ -154,7 +154,7 @@ const productSelect = `
   application_notes,
   is_featured,
   subcategory_id,
-  subcategories (
+  subcategories!products_subcategory_id_fkey (
     name,
     slug,
     categories ( name, slug )
