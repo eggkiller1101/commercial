@@ -1,9 +1,9 @@
 import Link from "next/link";
-import { ChevronLeft, ChevronRight, Download, Pencil } from "lucide-react";
+import { Download, Pencil } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { Pagination } from "@/components/ui/pagination";
 import { getDocuments } from "@/features/documents/data";
-import { cn } from "@/lib/utils";
 
 const PAGE_SIZE = 20;
 
@@ -109,70 +109,11 @@ export default async function DocumentsPage({
         </table>
       </div>
 
-      <div className="flex items-center justify-between">
-        <p className="text-sm text-muted-foreground">
-          第 {documents.page} 页 / 共 {documents.totalPages} 页
-        </p>
-
-        <div className="flex items-center gap-2">
-          <Button
-            asChild
-            className={cn(
-              documents.page <= 1 && "pointer-events-none opacity-50"
-            )}
-            size="sm"
-            variant="ghost"
-          >
-            <Link
-              aria-disabled={documents.page <= 1}
-              href={`/dashboard/documents?page=${Math.max(
-                documents.page - 1,
-                1
-              )}`}
-            >
-              <ChevronLeft className="mr-1 h-4 w-4" />
-              上一页
-            </Link>
-          </Button>
-
-          {Array.from({ length: documents.totalPages }, (_, index) => {
-            const page = index + 1;
-
-            return (
-              <Button
-                asChild
-                className="w-9 px-0"
-                key={page}
-                size="sm"
-                variant={page === documents.page ? "default" : "ghost"}
-              >
-                <Link href={`/dashboard/documents?page=${page}`}>{page}</Link>
-              </Button>
-            );
-          })}
-
-          <Button
-            asChild
-            className={cn(
-              documents.page >= documents.totalPages &&
-                "pointer-events-none opacity-50"
-            )}
-            size="sm"
-            variant="ghost"
-          >
-            <Link
-              aria-disabled={documents.page >= documents.totalPages}
-              href={`/dashboard/documents?page=${Math.min(
-                documents.page + 1,
-                documents.totalPages
-              )}`}
-            >
-              下一页
-              <ChevronRight className="ml-1 h-4 w-4" />
-            </Link>
-          </Button>
-        </div>
-      </div>
+      <Pagination
+        basePath="/dashboard/documents"
+        page={documents.page}
+        totalPages={documents.totalPages}
+      />
     </div>
   );
 }

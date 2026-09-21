@@ -1,7 +1,8 @@
 import Link from "next/link";
-import { ChevronLeft, ChevronRight, Pencil } from "lucide-react";
+import { Pencil } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { Pagination } from "@/components/ui/pagination";
 import { getProducts } from "@/features/products/data";
 import { ProductStatusButton } from "@/features/products/product-status-button";
 import { cn } from "@/lib/utils";
@@ -115,67 +116,11 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
         </table>
       </div>
 
-      <div className="flex items-center justify-between">
-        <p className="text-sm text-muted-foreground">
-          第 {products.page} 页 / 共 {products.totalPages} 页
-        </p>
-
-        <div className="flex items-center gap-2">
-          <Button
-            asChild
-            className={cn(
-              products.page <= 1 && "pointer-events-none opacity-50"
-            )}
-            size="sm"
-            variant="ghost"
-          >
-            <Link
-              aria-disabled={products.page <= 1}
-              href={`/dashboard/products?page=${Math.max(products.page - 1, 1)}`}
-            >
-              <ChevronLeft className="mr-1 h-4 w-4" />
-              上一页
-            </Link>
-          </Button>
-
-          {Array.from({ length: products.totalPages }, (_, index) => {
-            const page = index + 1;
-
-            return (
-              <Button
-                asChild
-                className="w-9 px-0"
-                key={page}
-                size="sm"
-                variant={page === products.page ? "default" : "ghost"}
-              >
-                <Link href={`/dashboard/products?page=${page}`}>{page}</Link>
-              </Button>
-            );
-          })}
-
-          <Button
-            asChild
-            className={cn(
-              products.page >= products.totalPages &&
-                "pointer-events-none opacity-50"
-            )}
-            size="sm"
-            variant="ghost"
-          >
-            <Link
-              aria-disabled={products.page >= products.totalPages}
-              href={`/dashboard/products?page=${Math.min(
-                products.page + 1,
-                products.totalPages
-              )}`}
-            >
-              下一页
-              <ChevronRight className="ml-1 h-4 w-4" />
-            </Link>
-          </Button>
-        </div>
-      </div>
+      <Pagination
+        basePath="/dashboard/products"
+        page={products.page}
+        totalPages={products.totalPages}
+      />
     </div>
   );
 }

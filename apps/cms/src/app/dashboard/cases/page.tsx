@@ -1,7 +1,8 @@
 import Link from "next/link";
-import { ChevronLeft, ChevronRight, Pencil } from "lucide-react";
+import { Pencil } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { Pagination } from "@/components/ui/pagination";
 import { getCases } from "@/features/cases/data";
 import { CaseStatusButton } from "@/features/cases/case-status-button";
 import { cn } from "@/lib/utils";
@@ -115,64 +116,11 @@ export default async function CasesPage({ searchParams }: CasesPageProps) {
         </table>
       </div>
 
-      <div className="flex items-center justify-between">
-        <p className="text-sm text-muted-foreground">
-          第 {cases.page} 页 / 共 {cases.totalPages} 页
-        </p>
-
-        <div className="flex items-center gap-2">
-          <Button
-            asChild
-            className={cn(cases.page <= 1 && "pointer-events-none opacity-50")}
-            size="sm"
-            variant="ghost"
-          >
-            <Link
-              aria-disabled={cases.page <= 1}
-              href={`/dashboard/cases?page=${Math.max(cases.page - 1, 1)}`}
-            >
-              <ChevronLeft className="mr-1 h-4 w-4" />
-              上一页
-            </Link>
-          </Button>
-
-          {Array.from({ length: cases.totalPages }, (_, index) => {
-            const page = index + 1;
-
-            return (
-              <Button
-                asChild
-                className="w-9 px-0"
-                key={page}
-                size="sm"
-                variant={page === cases.page ? "default" : "ghost"}
-              >
-                <Link href={`/dashboard/cases?page=${page}`}>{page}</Link>
-              </Button>
-            );
-          })}
-
-          <Button
-            asChild
-            className={cn(
-              cases.page >= cases.totalPages && "pointer-events-none opacity-50"
-            )}
-            size="sm"
-            variant="ghost"
-          >
-            <Link
-              aria-disabled={cases.page >= cases.totalPages}
-              href={`/dashboard/cases?page=${Math.min(
-                cases.page + 1,
-                cases.totalPages
-              )}`}
-            >
-              下一页
-              <ChevronRight className="ml-1 h-4 w-4" />
-            </Link>
-          </Button>
-        </div>
-      </div>
+      <Pagination
+        basePath="/dashboard/cases"
+        page={cases.page}
+        totalPages={cases.totalPages}
+      />
     </div>
   );
 }

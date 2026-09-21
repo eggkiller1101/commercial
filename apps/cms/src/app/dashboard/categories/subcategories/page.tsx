@@ -1,9 +1,9 @@
 import Link from "next/link";
-import { ChevronLeft, ChevronRight, Pencil } from "lucide-react";
+import { Pencil } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { Pagination } from "@/components/ui/pagination";
 import { getSubcategories } from "@/features/categories/data";
-import { cn } from "@/lib/utils";
 
 const PAGE_SIZE = 20;
 
@@ -90,72 +90,11 @@ export default async function SubcategoriesPage({
         </table>
       </div>
 
-      <div className="flex items-center justify-between">
-        <p className="text-sm text-muted-foreground">
-          第 {subcategories.page} 页 / 共 {subcategories.totalPages} 页
-        </p>
-
-        <div className="flex items-center gap-2">
-          <Button
-            asChild
-            className={cn(
-              subcategories.page <= 1 && "pointer-events-none opacity-50"
-            )}
-            size="sm"
-            variant="ghost"
-          >
-            <Link
-              aria-disabled={subcategories.page <= 1}
-              href={`/dashboard/categories/subcategories?page=${Math.max(
-                subcategories.page - 1,
-                1
-              )}`}
-            >
-              <ChevronLeft className="mr-1 h-4 w-4" />
-              上一页
-            </Link>
-          </Button>
-
-          {Array.from({ length: subcategories.totalPages }, (_, index) => {
-            const page = index + 1;
-
-            return (
-              <Button
-                asChild
-                className="w-9 px-0"
-                key={page}
-                size="sm"
-                variant={page === subcategories.page ? "default" : "ghost"}
-              >
-                <Link href={`/dashboard/categories/subcategories?page=${page}`}>
-                  {page}
-                </Link>
-              </Button>
-            );
-          })}
-
-          <Button
-            asChild
-            className={cn(
-              subcategories.page >= subcategories.totalPages &&
-                "pointer-events-none opacity-50"
-            )}
-            size="sm"
-            variant="ghost"
-          >
-            <Link
-              aria-disabled={subcategories.page >= subcategories.totalPages}
-              href={`/dashboard/categories/subcategories?page=${Math.min(
-                subcategories.page + 1,
-                subcategories.totalPages
-              )}`}
-            >
-              下一页
-              <ChevronRight className="ml-1 h-4 w-4" />
-            </Link>
-          </Button>
-        </div>
-      </div>
+      <Pagination
+        basePath="/dashboard/categories/subcategories"
+        page={subcategories.page}
+        totalPages={subcategories.totalPages}
+      />
     </div>
   );
 }
