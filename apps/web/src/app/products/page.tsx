@@ -8,7 +8,22 @@ import {
 } from "@/features/products/data";
 import { getRequestDictionary } from "@/lib/i18n/server";
 
-export default async function ProductsPage() {
+export default async function ProductsPage({
+  searchParams
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const queryParams = await searchParams;
+  const initialQuery = new URLSearchParams();
+
+  Object.entries(queryParams).forEach(([key, value]) => {
+    const firstValue = Array.isArray(value) ? value[0] : value;
+
+    if (firstValue !== undefined) {
+      initialQuery.set(key, firstValue);
+    }
+  });
+
   const [categories, products, attributeDefinitions, { dictionary, locale }] =
     await Promise.all([
       getCategoryTree(),
@@ -25,6 +40,7 @@ export default async function ProductsPage() {
       <ProductsCatalog
         attributeDefinitions={attributeDefinitions}
         categories={categories}
+        initialQuery={initialQuery.toString()}
         locale={locale}
         products={products}
       />

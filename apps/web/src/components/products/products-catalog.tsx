@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
 import type { CategoryItem } from "@/features/categories/data";
@@ -14,7 +15,7 @@ import {
   type Locale
 } from "@/lib/i18n/dictionaries";
 
-const pageSize = 8;
+const pageSize = 24;
 
 type CatalogState = {
   attrFilters: Record<string, string[] | { max?: string; min?: string }>;
@@ -24,18 +25,8 @@ type CatalogState = {
   sort: "newest" | "name_asc" | "model_asc";
 };
 
-function getInitialState(): CatalogState {
-  if (typeof window === "undefined") {
-    return {
-      attrFilters: {},
-      categorySlug: "",
-      keyword: "",
-      page: 1,
-      sort: "newest"
-    };
-  }
-
-  const params = new URLSearchParams(window.location.search);
+function getInitialState(query: string): CatalogState {
+  const params = new URLSearchParams(query);
   const sort = params.get("sort");
   const attrFilters: CatalogState["attrFilters"] = {};
 
@@ -203,18 +194,21 @@ function addToCart(product: ProductCardItem) {
 export function ProductsCatalog({
   attributeDefinitions,
   categories,
+  initialQuery = "",
   locale = defaultLocale,
   products
 }: {
   attributeDefinitions: ProductAttributeDefinition[];
   categories: CategoryItem[];
+  initialQuery?: string;
   locale?: Locale;
   products: ProductCardItem[];
 }) {
   const dictionary = getDictionary(locale);
   const t = dictionary.products;
   const common = dictionary.common;
-  const [state, setState] = useState<CatalogState>(getInitialState);
+  const [state, setState] = useState<CatalogState>(() => getInitialState(initialQuery));
+  const [jumpPage, setJumpPage] = useState("");
   const activeCategory = useMemo(() => {
     for (const category of categories) {
       if (category.slug === state.categorySlug) {
@@ -281,7 +275,12 @@ export function ProductsCatalog({
   );
 
   const totalPages = Math.max(Math.ceil(filteredProducts.length / pageSize), 1);
-  const safePage = Math.min(state.page, totalPages);
+  const safePage = Math.max(1, Math.min(state.page, totalPages));
+  const firstVisiblePage = Math.max(1, Math.min(safePage - 2, totalPages - 4));
+  const visiblePages = Array.from(
+    { length: Math.min(totalPages, 5) },
+    (_, index) => firstVisiblePage + index
+  );
   const pageItems = filteredProducts.slice(
     (safePage - 1) * pageSize,
     safePage * pageSize
@@ -291,6 +290,12 @@ export function ProductsCatalog({
   useEffect(() => {
     writeStateToUrl(state);
   }, [state]);
+
+  useEffect(() => {
+    if (state.page !== safePage) {
+      setState((previous) => ({ ...previous, page: safePage }));
+    }
+  }, [safePage, state.page]);
 
   function updateState(next: Partial<CatalogState>) {
     setState((previous) => {
@@ -711,7 +716,7 @@ export function ProductsCatalog({
             </div>
           ) : null}
 
-          <div className="product-grid">
+          <div className="product-grid catalog-product-grid">
             {pageItems.length ? (
               pageItems.map((product) => (
                 <article className="product-card" key={product.id}>
@@ -761,34 +766,61 @@ export function ProductsCatalog({
           </div>
 
           {totalPages > 1 ? (
-            <div className="pagination">
+            <nav aria-label={t.paginationLabel} className="pagination catalog-pagination">
               <button
+                aria-label={t.previousPage}
                 disabled={safePage === 1}
                 onClick={() => updateState({ page: safePage - 1 })}
                 type="button"
               >
-                ‹
+                <ChevronLeft aria-hidden="true" size={16} />
               </button>
-              {Array.from({ length: totalPages }, (_, index) => index + 1).map(
-                (page) => (
-                  <button
-                    className={page === safePage ? "is-active" : ""}
-                    key={page}
-                    onClick={() => updateState({ page })}
-                    type="button"
-                  >
-                    {page}
-                  </button>
-                )
-              )}
+              {visiblePages.map((page) => (
+                <button
+                  aria-current={page === safePage ? "page" : undefined}
+                  aria-label={`${t.pageLabel} ${page}`}
+                  className={page === safePage ? "is-active" : ""}
+                  key={page}
+                  onClick={() => updateState({ page })}
+                  type="button"
+                >
+                  {page}
+                </button>
+              ))}
               <button
+                aria-label={t.nextPage}
                 disabled={safePage === totalPages}
                 onClick={() => updateState({ page: safePage + 1 })}
                 type="button"
               >
-                ›
+                <ChevronRight aria-hidden="true" size={16} />
               </button>
-            </div>
+              <span className="catalog-total-pages">{t.totalPages(totalPages)}</span>
+              <form
+                className="catalog-page-jump"
+                onSubmit={(event) => {
+                  event.preventDefault();
+                  const target = Number(jumpPage);
+
+                  if (Number.isInteger(target) && target >= 1 && target <= totalPages) {
+                    updateState({ page: target });
+                    setJumpPage("");
+                  }
+                }}
+              >
+                <label htmlFor="catalog-jump-page">{t.goToPage}</label>
+                <input
+                  id="catalog-jump-page"
+                  inputMode="numeric"
+                  max={totalPages}
+                  min={1}
+                  onChange={(event) => setJumpPage(event.target.value)}
+                  type="number"
+                  value={jumpPage}
+                />
+                <button className="catalog-go-button" type="submit">Go</button>
+              </form>
+            </nav>
           ) : null}
         </section>
       </div>
