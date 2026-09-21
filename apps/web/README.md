@@ -21,3 +21,15 @@ docs/WEB_ARCHITECTURE.md
 Root Directory: apps/web
 Project: commercial-web
 ```
+
+询价附件上传到 Cloudflare R2；生产 Worker 需配置以下服务端变量：
+
+```text
+R2_ACCOUNT_ID=
+R2_ACCESS_KEY_ID=
+R2_SECRET_ACCESS_KEY=
+R2_FILE_BUCKET=
+NEXT_PUBLIC_R2_FILE_BASE_URL=
+```
+
+`R2_ACCESS_KEY_ID` 和 `R2_SECRET_ACCESS_KEY` 必须设置为 Worker secrets，不要加 `NEXT_PUBLIC_` 前缀。`NEXT_PUBLIC_R2_FILE_BASE_URL` 是文件 bucket 的公开访问地址。上传成功后，该 URL 写入 `inquiries.quote_file_url`，供 CMS 下载。

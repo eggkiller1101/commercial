@@ -5,13 +5,13 @@ import {
   createSupabaseServerClient
 } from "@/lib/supabase/server";
 import { normalizeLocale } from "@/lib/i18n/dictionaries";
+import { uploadFileToR2 } from "@/lib/r2";
 
 export type InquiryFormState = {
   message: string;
   ok: boolean;
 };
 
-const INQUIRY_BUCKET = "TEST";
 const MAX_QUOTE_FILE_SIZE_BYTES = 20 * 1024 * 1024;
 const ALLOWED_QUOTE_FILE_EXTENSIONS = new Set([
   "csv",
@@ -25,15 +25,6 @@ const ALLOWED_QUOTE_FILE_EXTENSIONS = new Set([
 
 function getFileExtension(fileName: string) {
   return fileName.split(".").pop()?.toLowerCase() || "file";
-}
-
-function sanitizeFileName(fileName: string) {
-  return fileName
-    .normalize("NFKD")
-    .replace(/[^\w.\-]+/g, "-")
-    .replace(/-+/g, "-")
-    .replace(/^-|-$/g, "")
-    .toLowerCase();
 }
 
 export async function submitInquiry(
@@ -110,17 +101,17 @@ export async function submitInquiry(
       };
     }
 
-    const safeName = sanitizeFileName(quoteFile.name) || `quote.${extension}`;
-    const objectPath = `inquiry-uploads/${Date.now()}-${safeName}`;
-    const { error: uploadError } = await supabase.storage
-      .from(INQUIRY_BUCKET)
-      .upload(objectPath, quoteFile, {
-        contentType: quoteFile.type || "application/octet-stream",
-        upsert: false
-      });
+    let uploadResult: Awaited<ReturnType<typeof uploadFileToR2>>;
 
-    if (uploadError) {
-      console.error("Failed to upload inquiry quote file", uploadError);
+    try {
+      uploadResult = await uploadFileToR2({
+        contentType: quoteFile.type || "application/octet-stream",
+        fileName: quoteFile.name,
+        folder: "inquiry-uploads",
+        payload: await quoteFile.arrayBuffer()
+      });
+    } catch (uploadError) {
+      console.error("Failed to upload inquiry quote file to R2", uploadError);
 
       return {
         message: messages.uploadFailed,
@@ -128,11 +119,16 @@ export async function submitInquiry(
       };
     }
 
-    const { data: publicUrlData } = supabase.storage
-      .from(INQUIRY_BUCKET)
-      .getPublicUrl(objectPath);
+    if (!uploadResult.ok) {
+      console.error("Failed to upload inquiry quote file to R2", uploadResult.message);
 
-    quoteFileUrl = publicUrlData.publicUrl;
+      return {
+        message: messages.uploadFailed,
+        ok: false
+      };
+    }
+
+    quoteFileUrl = uploadResult.url;
   }
 
   const numericProductId = Number(productId);
