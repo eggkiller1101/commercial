@@ -1,4 +1,5 @@
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { unstable_cache } from "next/cache";
 
 export type ProductCardItem = {
   attributes: ProductAttributeValue[];
@@ -39,6 +40,23 @@ export type ProductAttributeValue = {
   definitionId: string;
   valueNumber: number | null;
   valueText: string | null;
+};
+
+export type ProductListQuery = {
+  attributes?: Record<string, string[] | { max?: string; min?: string }>;
+  categorySlug?: string;
+  keyword?: string;
+  page?: number;
+  pageSize?: number;
+  sort?: "newest" | "name_asc" | "model_asc";
+};
+
+export type ProductListResult = {
+  items: ProductCardItem[];
+  page: number;
+  pageSize: number;
+  total: number;
+  totalPages: number;
 };
 
 export type ProductVariant = {
@@ -144,7 +162,24 @@ function mapProduct(product: ProductRow): ProductDetail {
   };
 }
 
-const productSelect = `
+const productListSelect = `
+  id,
+  model_number,
+  name,
+  slug,
+  summary,
+  is_featured,
+  subcategory_id,
+  subcategories!products_subcategory_id_fkey (
+    name,
+    slug,
+    categories ( name, slug )
+  ),
+  product_images ( image_url, is_primary ),
+  product_attribute_values ( attribute_definition_id, value_text, value_number )
+`;
+
+const productDetailSelect = `
   id,
   model_number,
   name,
@@ -179,7 +214,7 @@ export async function getPublishedProducts(params: {
 
   let query = supabase
     .from("products")
-    .select(productSelect)
+    .select(productListSelect)
     .eq("status", "published")
     .order("published_at", { ascending: false })
     .order("created_at", { ascending: false });
@@ -210,7 +245,148 @@ export async function getPublishedProducts(params: {
   return products;
 }
 
-export async function getPublishedProductBySlug(
+async function loadPublishedProductPage(
+  query: ProductListQuery = {}
+): Promise<ProductListResult> {
+  const pageSize = Math.max(1, query.pageSize ?? 24);
+  const page = Math.max(1, query.page ?? 1);
+  const supabase = createSupabaseServerClient();
+
+  if (!supabase) {
+    return { items: [], page, pageSize, total: 0, totalPages: 1 };
+  }
+
+  let matchingIds: number[] | null = null;
+  const intersectIds = (nextIds: number[]) => {
+    matchingIds = matchingIds === null
+      ? nextIds
+      : matchingIds.filter((id) => nextIds.includes(id));
+  };
+
+  if (query.categorySlug) {
+    const [{ data: category }, { data: subcategory }] = await Promise.all([
+      supabase.from("categories").select("id").eq("slug", query.categorySlug).maybeSingle(),
+      supabase.from("subcategories").select("id,category_id").eq("slug", query.categorySlug).maybeSingle()
+    ]);
+
+    if (subcategory?.id) {
+      const { data } = await supabase
+        .from("products")
+        .select("id")
+        .eq("status", "published")
+        .eq("subcategory_id", subcategory.id);
+      intersectIds((data ?? []).map((item) => item.id));
+    } else if (category?.id) {
+      const { data: children } = await supabase
+        .from("subcategories")
+        .select("id")
+        .eq("category_id", category.id);
+      const childIds = (children ?? []).map((item) => item.id);
+      if (!childIds.length) {
+        return { items: [], page, pageSize, total: 0, totalPages: 1 };
+      }
+      const { data } = await supabase
+        .from("products")
+        .select("id")
+        .eq("status", "published")
+        .in("subcategory_id", childIds);
+      intersectIds((data ?? []).map((item) => item.id));
+    } else {
+      return { items: [], page, pageSize, total: 0, totalPages: 1 };
+    }
+  }
+
+  const keyword = query.keyword?.trim();
+  if (keyword) {
+    const [byName, byModel] = await Promise.all([
+      supabase.from("products").select("id").eq("status", "published").ilike("name", `%${keyword}%`),
+      supabase.from("products").select("id").eq("status", "published").ilike("model_number", `%${keyword}%`)
+    ]);
+    intersectIds([
+      ...(byName.data ?? []).map((item) => item.id),
+      ...(byModel.data ?? []).map((item) => item.id)
+    ]);
+  }
+
+  for (const [code, value] of Object.entries(query.attributes ?? {})) {
+    const { data: definition } = await supabase
+      .from("attribute_definitions")
+      .select("id,data_type")
+      .eq("code", code)
+      .maybeSingle();
+    if (!definition) continue;
+
+    let attributeQuery = supabase
+      .from("product_attribute_values")
+      .select("product_id")
+      .eq("attribute_definition_id", definition.id);
+
+    if (definition.data_type === "number" && !Array.isArray(value)) {
+      if (value.min) attributeQuery = attributeQuery.gte("value_number", Number(value.min));
+      if (value.max) attributeQuery = attributeQuery.lte("value_number", Number(value.max));
+    } else if (Array.isArray(value) && value.length) {
+      attributeQuery = attributeQuery.in("value_text", value);
+    }
+
+    const { data } = await attributeQuery;
+    intersectIds((data ?? []).map((item) => item.product_id));
+  }
+
+  const resolvedMatchingIds = matchingIds as number[] | null;
+  if (resolvedMatchingIds !== null && resolvedMatchingIds.length === 0) {
+    return { items: [], page, pageSize, total: 0, totalPages: 1 };
+  }
+
+  let countQuery = supabase
+    .from("products")
+    .select("id", { count: "exact", head: true })
+    .eq("status", "published");
+  let listQuery = supabase
+    .from("products")
+    .select(productListSelect)
+    .eq("status", "published");
+
+  if (matchingIds) {
+    countQuery = countQuery.in("id", matchingIds);
+    listQuery = listQuery.in("id", matchingIds);
+  }
+
+  const [{ count, error: countError }, { data, error }] = await Promise.all([
+    countQuery,
+    listQuery
+      .order(query.sort === "name_asc" ? "name" : query.sort === "model_asc" ? "model_number" : "published_at", { ascending: query.sort !== "newest" })
+      .order("created_at", { ascending: false })
+      .range((page - 1) * pageSize, page * pageSize - 1)
+  ]);
+
+  if (countError || error) {
+    console.error("Failed to load published product page", countError ?? error);
+    return { items: [], page, pageSize, total: 0, totalPages: 1 };
+  }
+
+  const total = count ?? 0;
+  return {
+    items: ((data ?? []) as unknown as ProductRow[]).map(mapProduct),
+    page,
+    pageSize,
+    total,
+    totalPages: Math.max(Math.ceil(total / pageSize), 1)
+  };
+}
+
+const getCachedPublishedProductPage = unstable_cache(
+  loadPublishedProductPage,
+  ["published-product-page"],
+  { revalidate: 30, tags: ["products"] }
+);
+
+export async function getPublishedProductPage(
+  query: ProductListQuery = {}
+): Promise<ProductListResult> {
+  return getCachedPublishedProductPage(query);
+}
+
+async function loadPublishedProductBySlug(
   slug: string
 ): Promise<ProductDetail | null> {
   const supabase = createSupabaseServerClient();
@@ -219,12 +395,14 @@ export async function getPublishedProductBySlug(
     return null;
   }
 
-  const { data, error } = await supabase
+  const isNumericId = /^\d+$/.test(slug);
+  const detailQuery = supabase
     .from("products")
-    .select(productSelect)
-    .or(`slug.eq.${slug},id.eq.${Number(slug) || -1}`)
-    .eq("status", "published")
-    .maybeSingle();
+    .select(productDetailSelect)
+    .eq("status", "published");
+  const { data, error } = isNumericId
+    ? await detailQuery.eq("id", Number(slug)).maybeSingle()
+    : await detailQuery.eq("slug", slug).maybeSingle();
 
   if (error || !data) {
     if (error) {
@@ -237,6 +415,18 @@ export async function getPublishedProductBySlug(
   return mapProduct(data as unknown as ProductRow);
 }
 
+const getCachedPublishedProductBySlug = unstable_cache(
+  loadPublishedProductBySlug,
+  ["published-product-detail"],
+  { revalidate: 30, tags: ["products"] }
+);
+
+export async function getPublishedProductBySlug(
+  slug: string
+): Promise<ProductDetail | null> {
+  return getCachedPublishedProductBySlug(slug);
+}
+
 export async function getFeaturedProducts(): Promise<ProductCardItem[]> {
   const products = await getPublishedProducts();
 
@@ -244,7 +434,7 @@ export async function getFeaturedProducts(): Promise<ProductCardItem[]> {
   return (featured.length ? featured : products).slice(0, 6);
 }
 
-export async function getFilterableAttributeDefinitions(): Promise<
+async function loadFilterableAttributeDefinitions(): Promise<
   ProductAttributeDefinition[]
 > {
   const supabase = createSupabaseServerClient();
@@ -279,13 +469,66 @@ export async function getFilterableAttributeDefinitions(): Promise<
   }));
 }
 
+const getCachedFilterableAttributeDefinitions = unstable_cache(
+  loadFilterableAttributeDefinitions,
+  ["filterable-attribute-definitions"],
+  { revalidate: 60, tags: ["attribute-definitions"] }
+);
+
+export async function getFilterableAttributeDefinitions(): Promise<
+  ProductAttributeDefinition[]
+> {
+  return getCachedFilterableAttributeDefinitions();
+}
+
+async function loadRelatedProducts(
+  productId: string,
+  subcategoryId: string,
+  limit: number
+): Promise<ProductCardItem[]> {
+  const supabase = createSupabaseServerClient();
+  const numericSubcategoryId = Number(subcategoryId);
+
+  if (!supabase || !Number.isInteger(numericSubcategoryId)) {
+    return [];
+  }
+
+  const { data, error } = await supabase
+    .from("products")
+    .select(`
+      id, model_number, name, slug, summary, is_featured, subcategory_id,
+      subcategories!products_subcategory_id_fkey (
+        name, slug, categories ( name, slug )
+      ),
+      product_images ( image_url, is_primary )
+    `)
+    .eq("status", "published")
+    .eq("subcategory_id", numericSubcategoryId)
+    .neq("id", Number(productId))
+    .order("published_at", { ascending: false })
+    .limit(Math.min(Math.max(limit, 1), 4));
+
+  if (error || !data) {
+    console.error("Failed to load related products", error);
+    return [];
+  }
+
+  return (data as unknown as ProductRow[]).map(mapProduct);
+}
+
+const getCachedRelatedProducts = unstable_cache(
+  loadRelatedProducts,
+  ["related-products"],
+  { revalidate: 30, tags: ["products"] }
+);
+
 export async function getRelatedProducts(
   product: ProductDetail,
   limit = 4
 ): Promise<ProductCardItem[]> {
-  const products = await getPublishedProducts({
-    categorySlug: product.subcategorySlug || product.categorySlug
-  });
-
-  return products.filter((item) => item.id !== product.id).slice(0, limit);
+  return getCachedRelatedProducts(
+    product.id,
+    product.subcategoryId,
+    Math.min(Math.max(limit, 1), 4)
+  );
 }

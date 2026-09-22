@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
@@ -15,7 +16,6 @@ import {
   type Locale
 } from "@/lib/i18n/dictionaries";
 
-const pageSize = 24;
 
 type CatalogState = {
   attrFilters: Record<string, string[] | { max?: string; min?: string }>;
@@ -91,79 +91,6 @@ function writeStateToUrl(state: CatalogState) {
   window.history.replaceState(null, "", query ? `/products?${query}` : "/products");
 }
 
-function productMatchesCategory(product: ProductCardItem, categorySlug: string) {
-  if (!categorySlug) {
-    return true;
-  }
-
-  return (
-    product.categorySlug === categorySlug ||
-    product.subcategorySlug === categorySlug ||
-    product.subcategoryId === categorySlug
-  );
-}
-
-function productMatchesKeyword(product: ProductCardItem, keyword: string) {
-  const value = keyword.trim().toLowerCase();
-
-  if (!value) {
-    return true;
-  }
-
-  return (
-    product.name.toLowerCase().includes(value) ||
-    product.modelNumber.toLowerCase().includes(value)
-  );
-}
-
-function productMatchesAttributes(
-  product: ProductCardItem,
-  definitions: ProductAttributeDefinition[],
-  attrFilters: CatalogState["attrFilters"]
-) {
-  return Object.entries(attrFilters).every(([code, value]) => {
-    const definition = definitions.find((item) => item.code === code);
-
-    if (!definition) {
-      return true;
-    }
-
-    const productValue = product.attributes.find(
-      (item) => item.definitionId === definition.id
-    );
-
-    if (!productValue) {
-      return false;
-    }
-
-    if (definition.dataType === "number" && !Array.isArray(value)) {
-      const numberValue = productValue.valueNumber;
-
-      if (numberValue === null || numberValue === undefined) {
-        return false;
-      }
-
-      if (value.min && numberValue < Number(value.min)) {
-        return false;
-      }
-
-      if (value.max && numberValue > Number(value.max)) {
-        return false;
-      }
-
-      return true;
-    }
-
-    return Array.isArray(value) && productValue.valueText
-      ? value.includes(productValue.valueText)
-      : false;
-  });
-}
-
-function countProducts(products: ProductCardItem[], slug: string) {
-  return products.filter((product) => productMatchesCategory(product, slug)).length;
-}
-
 function addToCart(product: ProductCardItem) {
   const storageKey = "cloudintel_quote_cart_v1";
   const raw = window.localStorage.getItem(storageKey);
@@ -191,25 +118,40 @@ function addToCart(product: ProductCardItem) {
   window.localStorage.setItem(storageKey, JSON.stringify(current));
 }
 
+function countProducts(products: ProductCardItem[], slug: string) {
+  return products.filter(
+    (product) =>
+      product.categorySlug === slug ||
+      product.subcategorySlug === slug ||
+      product.subcategoryId === slug
+  ).length;
+}
+
 export function ProductsCatalog({
   attributeDefinitions,
   categories,
   initialQuery = "",
   locale = defaultLocale,
-  products
+  products,
+  totalPages,
+  totalProducts
 }: {
   attributeDefinitions: ProductAttributeDefinition[];
   categories: CategoryItem[];
   initialQuery?: string;
   locale?: Locale;
   products: ProductCardItem[];
+  totalPages: number;
+  totalProducts: number;
 }) {
+  const router = useRouter();
   const dictionary = getDictionary(locale);
   const t = dictionary.products;
   const common = dictionary.common;
   const categoryName = (category: { name: string; nameEn?: string }) =>
     locale === "en" && category.nameEn ? category.nameEn : category.name;
   const [state, setState] = useState<CatalogState>(() => getInitialState(initialQuery));
+  const [keywordInput, setKeywordInput] = useState(() => getInitialState(initialQuery).keyword);
   const [jumpPage, setJumpPage] = useState("");
   const activeCategory = useMemo(() => {
     for (const category of categories) {
@@ -229,26 +171,7 @@ export function ProductsCatalog({
     return null;
   }, [categories, state.categorySlug]);
 
-  const filteredProducts = useMemo(() => {
-    const next = products
-      .filter((product) => productMatchesCategory(product, state.categorySlug))
-      .filter((product) => productMatchesKeyword(product, state.keyword))
-      .filter((product) =>
-        productMatchesAttributes(product, attributeDefinitions, state.attrFilters)
-      );
-
-    return [...next].sort((a, b) => {
-      if (state.sort === "name_asc") {
-        return a.name.localeCompare(b.name, "zh-CN");
-      }
-
-      if (state.sort === "model_asc") {
-        return a.modelNumber.localeCompare(b.modelNumber, "zh-CN");
-      }
-
-      return Number(b.id) - Number(a.id);
-    });
-  }, [attributeDefinitions, products, state]);
+  const filteredProducts = products;
 
   const activeCategoryIds = useMemo(() => {
     if (!activeCategory) {
@@ -276,28 +199,46 @@ export function ProductsCatalog({
     [activeCategoryIds, attributeDefinitions]
   );
 
-  const totalPages = Math.max(Math.ceil(filteredProducts.length / pageSize), 1);
   const safePage = Math.max(1, Math.min(state.page, totalPages));
   const firstVisiblePage = Math.max(1, Math.min(safePage - 2, totalPages - 4));
   const visiblePages = Array.from(
     { length: Math.min(totalPages, 5) },
     (_, index) => firstVisiblePage + index
   );
-  const pageItems = filteredProducts.slice(
-    (safePage - 1) * pageSize,
-    safePage * pageSize
-  );
-  const totalProducts = products.length;
+  const pageItems = filteredProducts;
 
   useEffect(() => {
     writeStateToUrl(state);
-  }, [state]);
+    const query = new URLSearchParams(window.location.search);
+    const nextPath = query.toString() ? `/products?${query}` : "/products";
+    const currentPath = `${window.location.pathname}${window.location.search}`;
+
+    if (nextPath !== currentPath) {
+      router.replace(nextPath);
+    }
+  }, [router, state]);
 
   useEffect(() => {
     if (state.page !== safePage) {
       setState((previous) => ({ ...previous, page: safePage }));
     }
   }, [safePage, state.page]);
+
+  useEffect(() => {
+    if (keywordInput === state.keyword) {
+      return;
+    }
+
+    const timer = window.setTimeout(() => {
+      setState((previous) => ({
+        ...previous,
+        keyword: keywordInput,
+        page: 1
+      }));
+    }, 350);
+
+    return () => window.clearTimeout(timer);
+  }, [keywordInput, state.keyword]);
 
   function updateState(next: Partial<CatalogState>) {
     setState((previous) => {
@@ -330,7 +271,6 @@ export function ProductsCatalog({
     const values = new Set<string>();
 
     products
-      .filter((product) => productMatchesCategory(product, state.categorySlug))
       .forEach((product) => {
         const value = product.attributes.find(
           (item) => item.definitionId === definition.id
@@ -530,29 +470,24 @@ export function ProductsCatalog({
         <section>
           {state.keyword.trim() ? (
             <div className="search-keyword-banner">
-              {t.keywordResultPrefix} <strong>{filteredProducts.length}</strong>{" "}
+              {t.keywordResultPrefix} <strong>{totalProducts}</strong>{" "}
               {t.keywordResultSuffix} “{state.keyword.trim()}”
             </div>
           ) : null}
 
           <div className="results-toolbar">
             <div className="results-count">
-              {t.resultCountPrefix} <strong>{filteredProducts.length}</strong>{" "}
+              {t.resultCountPrefix} <strong>{totalProducts}</strong>{" "}
               {t.resultCountSuffix}
             </div>
             <div className="toolbar-right">
               <div className="search-box">
                 <span>🔍</span>
                 <input
-                  onChange={(event) =>
-                    updateState({
-                      keyword: event.target.value,
-                      page: 1
-                    })
-                  }
+                  onChange={(event) => setKeywordInput(event.target.value)}
                   placeholder={t.searchPlaceholder}
                   type="search"
-                  value={state.keyword}
+                  value={keywordInput}
                 />
               </div>
               <select
@@ -593,7 +528,10 @@ export function ProductsCatalog({
                   {t.keyword}
                   {state.keyword.trim()}
                   <button
-                    onClick={() => updateState({ keyword: "", page: 1 })}
+                    onClick={() => {
+                      setKeywordInput("");
+                      updateState({ keyword: "", page: 1 });
+                    }}
                     type="button"
                   >
                     ×

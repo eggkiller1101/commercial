@@ -1,4 +1,5 @@
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { unstable_cache } from "next/cache";
 
 export type CategoryItem = {
   description: string;
@@ -75,7 +76,7 @@ export async function getActiveSubcategories(): Promise<SubcategoryItem[]> {
   }));
 }
 
-export async function getCategoryTree(): Promise<CategoryItem[]> {
+async function loadCategoryTree(): Promise<CategoryItem[]> {
   const [categories, subcategories] = await Promise.all([
     getActiveCategories(),
     getActiveSubcategories()
@@ -88,6 +89,11 @@ export async function getCategoryTree(): Promise<CategoryItem[]> {
     )
   }));
 }
+
+export const getCategoryTree = unstable_cache(loadCategoryTree, ["active-category-tree"], {
+  revalidate: 60,
+  tags: ["categories"]
+});
 
 export async function getCategoryBySlug(
   slug: string
