@@ -21,6 +21,9 @@ export const dictionaries = {
       download: "下载",
       featured: "重点推荐",
       home: "首页",
+      wechatQrAlt: "微信二维码",
+      wechatQrCaption: "请使用微信扫描二维码添加联系人",
+      wechatQrClose: "关闭二维码",
       noFile: "暂无文件",
       noImage: "暂无图片",
       notFoundDescription: "请返回首页继续浏览。",
@@ -53,7 +56,8 @@ export const dictionaries = {
       email: "邮箱咨询",
       response: "工程师会在 1 个工作日内与您联系。",
       serviceHotline: "服务热线",
-      techSupport: "技术支持"
+      techSupport: "技术支持",
+      wechat: "微信"
     },
     home: {
       aboutBody1:
@@ -292,6 +296,9 @@ export const dictionaries = {
       download: "Download",
       featured: "Featured",
       home: "Home",
+      wechatQrAlt: "WeChat QR code",
+      wechatQrCaption: "Scan the QR code with WeChat to add this contact",
+      wechatQrClose: "Close QR code",
       noFile: "No file",
       noImage: "No image",
       notFoundDescription: "Please return to the homepage to continue browsing.",
@@ -324,7 +331,8 @@ export const dictionaries = {
       email: "Email",
       response: "Our engineers will contact you within 1 business day.",
       serviceHotline: "Hotline",
-      techSupport: "Technical Support"
+      techSupport: "Technical Support",
+      wechat: "WeChat"
     },
     home: {
       aboutBody1:
