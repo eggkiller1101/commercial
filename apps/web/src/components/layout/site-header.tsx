@@ -100,7 +100,9 @@ export async function SiteHeader({
                                 <Link
                                   href={`/products?category=${subcategory.slug}`}
                                 >
-                                  {subcategory.name}
+                                  {locale === "en" && subcategory.nameEn
+                                    ? subcategory.nameEn
+                                    : subcategory.name}
                                 </Link>
                               </li>
                             ))}
