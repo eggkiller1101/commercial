@@ -241,6 +241,7 @@ export const dictionaries = {
       cases: {
         all: "全部案例",
         breadcrumb: "项目案例",
+        detailPublishedLabel: "发布日期：",
         emptyTag: "项目案例",
         emptySummary: "暂无案例简介",
         filters: ["商旅交通建筑", "能源核心场景", "通用工业与市政基建", "海外 EPC"],
@@ -508,6 +509,7 @@ export const dictionaries = {
       cases: {
         all: "All Cases",
         breadcrumb: "Project Cases",
+        detailPublishedLabel: "Published: ",
         emptyTag: "Project Case",
         emptySummary: "No case summary yet",
         filters: ["Hospitality & Transportation", "Energy Projects", "Industrial & Municipal", "Overseas EPC"],
