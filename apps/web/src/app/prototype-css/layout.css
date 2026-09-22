@@ -62,40 +62,6 @@
   gap: 20px;
 }
 
-/* -------------------- 移动端导航折叠按钮（左上角） --------------------
-   导航栏在任何屏幕宽度下都必须存在，宽屏时保持原来的横向导航条；
-   窄屏时改用左上角的按钮折叠/展开导航，而不是直接隐藏导航。
-   用纯 CSS 的 checkbox + label 技巧实现，不需要额外的客户端组件。 */
-.nav-toggle-checkbox {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 1px;
-  height: 1px;
-  margin: 0;
-  opacity: 0;
-  pointer-events: none;
-}
-
-.nav-toggle-btn {
-  display: none;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  flex-shrink: 0;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  background: var(--color-surface);
-  font-size: 18px;
-  line-height: 1;
-  cursor: pointer;
-}
-
-.nav-toggle-btn:hover {
-  border-color: var(--primary-300);
-}
-
 .logo {
   display: flex;
   align-items: center;
@@ -130,9 +96,9 @@
 }
 
 .main-nav-bar .container {
-  position: relative;
   display: flex;
   justify-content: center;
+  position: relative;
 }
 
 .main-nav-list {
@@ -142,19 +108,8 @@
 }
 
 .main-nav-list > li {
-  position: relative;
-  flex-shrink: 0;
-}
-
-/* "产品中心"排在导航第 2 项，明显偏靠导航栏左侧。mega-menu 原来是以它所在
-   的 <li> 自己的中点为基准水平居中展开（position:absolute 的定位基准是最近的
-   position:relative 祖先，也就是这个 <li> 本身），但下拉面板宽达 920px，
-   以一个偏左的锚点居中展开，右侧很容易超出视口——这就是"产品中心溢出屏幕
-   外"的原因。这里让 mega-menu 改成以整个导航栏容器（上面加了
-   position:relative 的 .main-nav-bar .container）为基准居中，而不是以自己
-   所在的 <li> 为基准，所以先把这个 <li> 的定位基准“让”给外层容器。 */
-.main-nav-list > li:has(.mega-menu) {
   position: static;
+  flex-shrink: 0;
 }
 
 .nav-link {
@@ -266,9 +221,10 @@
 .mega-menu {
   position: absolute;
   top: 100%;
-  left: 50%;
-  transform: translateX(-50%) translateY(8px);
-  width: min(920px, 90vw);
+  left: 24px;
+  right: 24px;
+  transform: translateY(8px);
+  width: auto;
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
@@ -307,10 +263,7 @@
 
 /* -------------------- 面包屑 -------------------- */
 .breadcrumb {
-  /* 同上：product-detail-view.tsx 里是 className="breadcrumb container"，
-     两值简写会把 .container 的左右内边距清零。 */
-  padding-top: 16px;
-  padding-bottom: 16px;
+  padding: 16px 0;
   font-size: 13px;
   color: var(--color-text-muted);
 }
@@ -345,14 +298,7 @@
 }
 
 .footer-top {
-  /* 注意：这里不能再用 padding: 56px 0 40px 这种三值简写——0 会把左右
-     padding 也一起设成 0，把 .container 类本来带的左右内边距直接覆盖掉，
-     宽屏时看不出来（容器本身没占满整个视口，两侧留白是"居中"带来的假象），
-     一旦屏幕宽度小于设计稿的最大宽度（几乎所有笔记本/平板/手机都会命中），
-     页脚内容就会真的贴到屏幕边缘。所以左右内边距交给 .container 类，这里
-     只设置上下内边距。 */
-  padding-top: 56px;
-  padding-bottom: 40px;
+  padding: 56px 0 40px;
   display: grid;
   grid-template-columns: 1.3fr 0.9fr 0.9fr 0.9fr 1.8fr;
   gap: 32px;
@@ -442,9 +388,7 @@
 
 .footer-bottom {
   border-top: 1px solid rgba(255, 255, 255, 0.1);
-  /* 同上：不用 padding: 18px 0 简写，避免把左右内边距清零。 */
-  padding-top: 18px;
-  padding-bottom: 18px;
+  padding: 18px 0;
   font-size: 12px;
   color: var(--neutral-500);
   display: flex;
@@ -453,69 +397,61 @@
   gap: 8px;
 }
 
-/* -------------------- 响应式：窄屏下导航栏折叠为左上角按钮，而不是消失 -------------------- */
+/* -------------------- 响应式：窄屏简化处理（原型阶段先保证可用） -------------------- */
 @media (max-width: 960px) {
-  .nav-toggle-btn {
-    display: inline-flex;
-    order: -1;
-    margin-right: 4px;
+  .topbar .container {
+    height: auto;
+    min-height: 36px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    gap: 8px;
+    flex-wrap: wrap;
   }
 
-  /* 导航条本身始终保留在 DOM/布局中，默认收起（高度为 0），
-     点击左上角按钮（勾选隐藏的 checkbox）后展开，而不是 display:none 直接消失 */
+  .site-header {
+    position: static;
+  }
+
+  .header-row-top {
+    height: auto;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    padding-top: 14px;
+    padding-bottom: 14px;
+  }
+
+  .logo {
+    width: 100%;
+  }
+
+  .logo .logo-sub {
+    white-space: normal;
+  }
+
+  .header-actions {
+    width: 100%;
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+
+  .header-search {
+    width: min(100%, 360px);
+    flex: 1 1 240px;
+  }
+
   .main-nav-bar {
-    max-height: 0;
-    overflow: hidden;
-    border-top: none;
-    transition: max-height 0.25s ease;
-  }
-
-  .nav-toggle-checkbox:checked ~ .main-nav-bar {
-    max-height: 80vh;
-    overflow-y: auto;
-    border-top: 1px solid var(--color-border);
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
   }
 
   .main-nav-bar .container {
     justify-content: flex-start;
-    padding-top: 4px;
-    padding-bottom: 8px;
   }
 
   .main-nav-list {
-    flex-direction: column;
-    flex-wrap: wrap;
-    width: 100%;
-    gap: 0;
-  }
-
-  .main-nav-list > li {
-    width: 100%;
-  }
-
-  .nav-link {
-    width: 100%;
-    height: auto;
-    padding: 12px 4px;
-    border-bottom: 1px solid var(--color-border);
-  }
-
-  .mega-menu {
-    position: static;
-    transform: none;
-    width: 100%;
-    max-width: none;
-    box-shadow: none;
-    border: none;
-    padding: 4px 0 8px 16px;
-    display: none;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px 24px;
-  }
-
-  .main-nav-list > li:hover .mega-menu,
-  .main-nav-list > li:focus-within .mega-menu {
-    display: grid;
+    min-width: max-content;
+    padding-right: 24px;
   }
 
   .footer-top {
@@ -523,13 +459,67 @@
   }
 }
 
-/* 手机宽度下页脚 5 栏挤在 2 列网格里，每栏只有约 170px 宽，"联系方式"这一栏的
-   标签+数值一行放不下、显得很挤，看起来像是没有对齐。这里让页脚在手机宽度下
-   收成单列，每一栏独占一行的宽度，服务热线/邮箱/微信这几行才有地方把标签和
-   数值好好排开。 */
-@media (max-width: 640px) {
+@media (max-width: 760px) {
+  .topbar-links {
+    gap: 12px;
+    font-size: 12px;
+  }
+
+  .header-row-top {
+    gap: 14px;
+  }
+
+  .logo .logo-mark {
+    width: 32px;
+    height: 32px;
+  }
+
+  .logo .logo-text {
+    font-size: 17px;
+  }
+
+  .logo .logo-sub {
+    display: none;
+  }
+
+  .header-actions {
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .header-search {
+    display: flex;
+    width: 100%;
+    max-width: none;
+    flex: 1 1 100%;
+  }
+
+  .cart-btn {
+    width: 100%;
+  }
+
+  .nav-link {
+    height: 44px;
+    padding: 0 14px;
+    font-size: 13.5px;
+  }
+
+  .mega-menu {
+    display: none !important;
+  }
+
   .footer-top {
     grid-template-columns: 1fr;
-    gap: 28px;
+    gap: 24px;
+  }
+
+  .footer-contact-list li {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .footer-contact-value {
+    text-align: left;
   }
 }

@@ -13,7 +13,7 @@ type CategoryPageProps = {
 
 export default async function CategoryPage({ params }: CategoryPageProps) {
   const { categorySlug } = await params;
-  const [category, products, { dictionary }] = await Promise.all([
+  const [category, products, { dictionary, locale }] = await Promise.all([
     getCategoryBySlug(categorySlug),
     getPublishedProducts({ categorySlug }),
     getRequestDictionary()
@@ -21,6 +21,10 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
   const t = dictionary.category;
   const productsText = dictionary.products;
   const common = dictionary.common;
+  const categoryName =
+    locale === "en" && category?.nameEn
+      ? category.nameEn
+      : category?.name;
 
   if (!category) {
     notFound();
@@ -38,14 +42,14 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
           <li>
             <Link href="/products">{productsText.breadcrumb}</Link>
           </li>
-          <li>{category.name}</li>
+            <li>{categoryName}</li>
         </ol>
       </nav>
 
       <div className="hero hero-compact">
         <div className="container hero-inner">
           <div className="hero-eyebrow">{productsText.breadcrumb}</div>
-          <h1>{category.name}</h1>
+          <h1>{categoryName}</h1>
           <p>{category.description || ""}</p>
           <div className="hero-actions">
             <Link className="btn btn-secondary" href={`/products?category=${category.slug}`}>

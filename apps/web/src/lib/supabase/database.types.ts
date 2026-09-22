@@ -71,6 +71,7 @@ export type Database = {
           id: number;
           is_active: boolean;
           name: string;
+          name_en: string | null;
           parent_id: number | null;
           seo_description: string | null;
           seo_title: string | null;
@@ -89,6 +90,7 @@ export type Database = {
           id: number;
           is_active: boolean;
           name: string;
+          name_en: string | null;
           slug: string | null;
           sort_order: number;
           updated_at: string;

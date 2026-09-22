@@ -207,6 +207,8 @@ export function ProductsCatalog({
   const dictionary = getDictionary(locale);
   const t = dictionary.products;
   const common = dictionary.common;
+  const categoryName = (category: { name: string; nameEn?: string }) =>
+    locale === "en" && category.nameEn ? category.nameEn : category.name;
   const [state, setState] = useState<CatalogState>(() => getInitialState(initialQuery));
   const [jumpPage, setJumpPage] = useState("");
   const activeCategory = useMemo(() => {
@@ -355,104 +357,10 @@ export function ProductsCatalog({
         {activeCategory ? (
           <>
             <span className="mx-2">/</span>
-            <span>{activeCategory.name}</span>
+          <span>{categoryName(activeCategory)}</span>
           </>
         ) : null}
       </div>
-
-      {!state.categorySlug ? (
-        <section className="pb-6 pt-3">
-          <div className="category-tree-diagram">
-            <div className="tree-diagram-head">
-              <div>
-                <h2>{t.categoryOverview}</h2>
-                <p>{t.categoryOverviewDesc}</p>
-              </div>
-              <div className="tree-diagram-legend">
-                <span>
-                  <span className="dot l1" />
-                  {t.overview}
-                </span>
-                <span>
-                  <span className="dot l2" />
-                  {t.childCategory}
-                </span>
-              </div>
-            </div>
-            <ul className="org-tree">
-              <li>
-                <button
-                  className="tree-node tree-node-root"
-                  onClick={() =>
-                    updateState({ categorySlug: "", page: 1 })
-                  }
-                  type="button"
-                >
-                  {t.allProducts}
-                  <span className="tree-node-count">{totalProducts}</span>
-                </button>
-                <ul>
-                  {categories.map((category) => {
-                    const categoryCount = countProducts(products, category.slug);
-
-                    return (
-                      <li key={category.id}>
-                        <button
-                          className="tree-node tree-node-l1"
-                          onClick={() =>
-                            updateState({
-                              categorySlug: category.slug,
-                              page: 1
-                            })
-                          }
-                          type="button"
-                        >
-                          {category.name}
-                          <span className="tree-node-count">
-                            {categoryCount}
-                          </span>
-                        </button>
-                        {category.subcategories?.length ? (
-                          <ul>
-                            {category.subcategories.map((subcategory) => {
-                              const count = countProducts(
-                                products,
-                                subcategory.slug
-                              );
-
-                              return (
-                                <li key={subcategory.id}>
-                                  <button
-                                    className={`tree-node tree-node-l2 ${
-                                      count === 0 ? "is-empty" : ""
-                                    }`}
-                                    onClick={() =>
-                                      updateState({
-                                        categorySlug: subcategory.slug,
-                                        page: 1
-                                      })
-                                    }
-                                    type="button"
-                                  >
-                                    {subcategory.name}
-                                    <span className="tree-node-count">
-                                      {count}
-                                    </span>
-                                  </button>
-                                </li>
-                              );
-                            })}
-                          </ul>
-                        ) : null}
-                      </li>
-                    );
-                  })}
-                </ul>
-              </li>
-            </ul>
-          </div>
-        </section>
-      ) : null}
 
       <div className="layout-with-sidebar">
         <aside>
@@ -465,7 +373,7 @@ export function ProductsCatalog({
                   onClick={() => updateState({ categorySlug: "", page: 1 })}
                   type="button"
                 >
-                  {t.allProducts}
+                  <span className="category-name">{t.allProducts}</span>
                   <span className="count">{totalProducts}</span>
                 </button>
               </li>
@@ -480,7 +388,7 @@ export function ProductsCatalog({
                     }
                     type="button"
                   >
-                    {category.name}
+                    <span className="category-name">{categoryName(category)}</span>
                     <span className="count">
                       {countProducts(products, category.slug)}
                     </span>
@@ -503,7 +411,11 @@ export function ProductsCatalog({
                             }
                             type="button"
                           >
-                            {subcategory.name}
+                            <span className="category-name">
+                              {locale === "en" && subcategory.nameEn
+                                ? subcategory.nameEn
+                                : subcategory.name}
+                            </span>
                             <span className="count">
                               {countProducts(products, subcategory.slug)}
                             </span>

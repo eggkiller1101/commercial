@@ -16,6 +16,8 @@ export const dictionaries = {
       all: "全部",
       backHome: "返回首页",
       contactUs: "联系我们",
+      dataSource: "实时数据",
+      dataSourceText: "当前页面数据来自真实 Supabase 项目",
       download: "下载",
       featured: "重点推荐",
       home: "首页",
@@ -24,10 +26,7 @@ export const dictionaries = {
       notFoundDescription: "请返回首页继续浏览。",
       notFoundTitle: "页面不存在",
       viewAll: "查看全部 →",
-      viewDetails: "查看详情",
-      wechatQrAlt: "微信二维码",
-      wechatQrCaption: "微信扫一扫，添加工程师",
-      wechatQrClose: "关闭"
+      viewDetails: "查看详情"
     },
     nav: {
       about: "关于我们",
@@ -42,7 +41,6 @@ export const dictionaries = {
       services: "技术与服务",
       serviceHotline: "服务热线：400-000-0000",
       switchLanguage: "English",
-      toggleNav: "展开导航菜单",
       viewAll: "查看全部 →"
     },
     footer: {
@@ -53,7 +51,7 @@ export const dictionaries = {
       description:
         "专注高端消防管道系统与工业流体管道整体解决方案，提供产品选型、成套供货、技术支持与全周期服务。",
       email: "邮箱咨询",
-      wechat: "微信咨询",
+      response: "工程师会在 1 个工作日内与您联系。",
       serviceHotline: "服务热线",
       techSupport: "技术支持"
     },
@@ -94,10 +92,7 @@ export const dictionaries = {
       activeCategory: "分类：",
       allProducts: "全部产品",
       breadcrumb: "产品中心",
-      categoryOverview: "产品分类总览",
-      categoryOverviewDesc: "点击任意节点直接进入该分类",
       categoryTitle: "产品分类",
-      childCategory: "子类",
       clearFilters: "清除全部筛选",
       empty: "没有找到符合条件的产品，试试调整筛选条件。",
       filterByAttributes: "按技术参数筛选",
@@ -118,7 +113,6 @@ export const dictionaries = {
       noSpecs: "暂无技术参数。",
       noVariants: "暂无规格型号数据。",
       noLimit: "不限",
-      overview: "大类",
       publishedNewest: "最新发布",
       related: "相关产品",
       resultCountPrefix: "共",
@@ -246,15 +240,10 @@ export const dictionaries = {
       },
       cases: {
         all: "全部案例",
-        backToList: "← 返回项目案例列表",
         breadcrumb: "项目案例",
-        detailFilesTitle: "相关图片",
-        detailNoContent: "该案例暂无详细内容，欢迎联系工程师了解项目详情。",
-        detailPublishedLabel: "发布时间：",
         emptyTag: "项目案例",
         emptySummary: "暂无案例简介",
         filters: ["商旅交通建筑", "能源核心场景", "通用工业与市政基建", "海外 EPC"],
-        notFoundDesc: "该案例不存在或已下线。",
         subtitle: "覆盖商旅交通建筑、能源核心场景、通用工业与市政基建、海外 EPC 等项目类型。",
         title: "代表性工程场景与项目经验"
       },
@@ -294,6 +283,8 @@ export const dictionaries = {
       all: "All",
       backHome: "Back to Home",
       contactUs: "Contact Us",
+      dataSource: "Live Data",
+      dataSourceText: "This page is powered by the live Supabase project",
       download: "Download",
       featured: "Featured",
       home: "Home",
@@ -302,10 +293,7 @@ export const dictionaries = {
       notFoundDescription: "Please return to the homepage to continue browsing.",
       notFoundTitle: "Page Not Found",
       viewAll: "View All →",
-      viewDetails: "View Details",
-      wechatQrAlt: "WeChat QR code",
-      wechatQrCaption: "Scan with WeChat to add our engineer",
-      wechatQrClose: "Close"
+      viewDetails: "View Details"
     },
     nav: {
       about: "About",
@@ -320,7 +308,6 @@ export const dictionaries = {
       services: "Services",
       serviceHotline: "Hotline: 400-000-0000",
       switchLanguage: "中文",
-      toggleNav: "Toggle navigation menu",
       viewAll: "View All →"
     },
     footer: {
@@ -331,7 +318,7 @@ export const dictionaries = {
       description:
         "Focused on premium fire protection piping systems and industrial fluid piping solutions, covering product selection, supply, technical support, and lifecycle service.",
       email: "Email",
-      wechat: "WeChat",
+      response: "Our engineers will contact you within 1 business day.",
       serviceHotline: "Hotline",
       techSupport: "Technical Support"
     },
@@ -373,10 +360,7 @@ export const dictionaries = {
       allProducts: "All Products",
       applicationNotes: "Applications / installation notes: ",
       breadcrumb: "Products",
-      categoryOverview: "Product Category Overview",
-      categoryOverviewDesc: "Click any node to browse that category",
       categoryTitle: "Product Categories",
-      childCategory: "Subcategory",
       clearFilters: "Clear All Filters",
       decreaseQty: "Decrease quantity",
       downloadDocuments: "Download Technical Files",
@@ -403,7 +387,6 @@ export const dictionaries = {
       noSpecs: "No technical specifications yet.",
       noVariants: "No variant data yet.",
       noLimit: "Any",
-      overview: "Category",
       publishedNewest: "Newest",
       quoteNow: "Submit RFQ Directly",
       related: "Related Products",
@@ -524,15 +507,10 @@ export const dictionaries = {
       },
       cases: {
         all: "All Cases",
-        backToList: "← Back to project cases",
         breadcrumb: "Project Cases",
-        detailFilesTitle: "Related Image",
-        detailNoContent: "No detailed content for this case yet — please contact our engineers for more information.",
-        detailPublishedLabel: "Published: ",
         emptyTag: "Project Case",
         emptySummary: "No case summary yet",
         filters: ["Hospitality & Transportation", "Energy Projects", "Industrial & Municipal", "Overseas EPC"],
-        notFoundDesc: "This case does not exist or is no longer available.",
         subtitle: "Covering hospitality and transportation buildings, energy projects, industrial and municipal infrastructure, and overseas EPC.",
         title: "Representative Engineering Scenarios and Project Experience"
       },
