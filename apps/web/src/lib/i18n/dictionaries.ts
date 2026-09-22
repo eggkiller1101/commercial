@@ -240,7 +240,10 @@ export const dictionaries = {
       },
       cases: {
         all: "全部案例",
+        backToList: "返回案例列表",
         breadcrumb: "项目案例",
+        detailFilesTitle: "相关资料",
+        detailNoContent: "暂无案例详细内容。",
         detailPublishedLabel: "发布日期：",
         emptyTag: "项目案例",
         emptySummary: "暂无案例简介",
@@ -508,7 +511,10 @@ export const dictionaries = {
       },
       cases: {
         all: "All Cases",
+        backToList: "Back to Cases",
         breadcrumb: "Project Cases",
+        detailFilesTitle: "Related Files",
+        detailNoContent: "No detailed case content yet.",
         detailPublishedLabel: "Published: ",
         emptyTag: "Project Case",
         emptySummary: "No case summary yet",
